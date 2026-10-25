@@ -53,7 +53,9 @@ npx vinext init --legacy-wrangler-cloudflare-init  # adds vite.config.ts + scrip
   "vars": {
     "MODEL_DEFAULT": "@cf/meta/llama-3.1-8b-instruct-fp8-fast",   // switch to llama-3.3-70b for the demo
     "AI_GATEWAY_ID": "agenttrace",
-    "MAX_STEPS": "8"
+    "MAX_STEPS": "8",
+    "MAX_RUNS_PER_DAY": "30",                // abuse guard for the public URL (D19)
+    "SEED_DEMO": "true"                     // insert demo runs when the DO is empty (D17)
   }
 }</code></pre>
 <div class="table-wrap"><table><thead><tr><th>Key</th><th>Why</th><th>State</th></tr></thead><tbody>
@@ -61,6 +63,8 @@ npx vinext init --legacy-wrangler-cloudflare-init  # adds vite.config.ts + scrip
 <tr><td><code>ai.remote: true</code></td><td>AI always runs remotely, including in local dev</td><td><span class="badge ok">✅ confirmed</span></td></tr>
 <tr><td><code>new_sqlite_classes</code></td><td>SQLite backend, the only DO backend on Free</td><td><span class="badge ok">✅ confirmed</span></td></tr>
 <tr><td><code>observability.traces</code></td><td>Platform spans plus the dashboard Agents tab</td><td><span class="badge ok">✅ confirmed</span></td></tr>
+<tr><td><code>MAX_RUNS_PER_DAY</code></td><td>Daily run cap; API 2 returns 429 beyond it</td><td><span class="badge ok">✅ D19</span></td></tr>
+<tr><td><code>SEED_DEMO</code></td><td>Seed demo runs on first start</td><td><span class="badge ok">✅ D17</span></td></tr>
 <tr><td><code>main: ./worker/index.ts</code></td><td>Custom entry so the DO class is exported next to the app</td><td><span class="badge warn">🟡 verify in spike</span></td></tr>
 </tbody></table></div>
 

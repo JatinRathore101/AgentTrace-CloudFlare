@@ -28,7 +28,7 @@
 
       <h1>Decisions — AgentTrace</h1>
       <p class="lead">Every question asked and decision taken, in order. Append-only.</p>
-      <dl class="meta"><div><dt>Rows</dt><dd>15</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+      <dl class="meta"><div><dt>Rows</dt><dd>19</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
 
 <h2>Decision log</h2>
 <div class="table-wrap"><table><thead><tr><th>#</th><th>Date</th><th>Question / topic</th><th>Options offered</th><th>Decision</th><th>Decided by</th><th>Reason</th></tr></thead><tbody>
@@ -47,6 +47,10 @@
 <tr><td>D13</td><td>25 Oct 2026</td><td>SQL / liquibase files</td><td>Skill default · in-code schema</td><td><span class="badge ok">No .sql or liquibase files</span></td><td>Claude (plan approved)</td><td>There is no external DB. The DO creates its tables on start. Logged as an exception to the skill.</td></tr>
 <tr><td>D14</td><td>25 Oct 2026</td><td>assignment-analysis.html</td><td>Keep standalone · fold into docs set</td><td><span class="badge ok">Folded into ticket-context.html</span></td><td>Claude (plan approved)</td><td>check-docs.py rejects pages without the shared skeleton or with inline style.</td></tr>
 <tr><td>D15</td><td>25 Oct 2026</td><td>Artifacts</td><td>Publish · local only</td><td><span class="badge ok">Local docs only</span></td><td>Jatin</td><td>&quot;No need to maintain artifacts, we will rely on our local docs.&quot;</td></tr>
+<tr><td>D16</td><td>25 Oct 2026</td><td>Todo structure</td><td>15-row phased todo · 6 sections proposed by Jatin</td><td><span class="badge ok">6 sections: prerequisites, code, calibration, seed, delivery, E2E</span></td><td>Jatin</td><td>The earlier todo was too fine-grained. Calibration runs before seeding because the fixtures come from calibrated runs.</td></tr>
+<tr><td>D17</td><td>25 Oct 2026</td><td>SQL seeding</td><td>SQL seed files · JSON fixtures auto-inserted · no seed</td><td><span class="badge ok">JSON fixtures, inserted when runs is empty and SEED_DEMO=true</span> <span class="badge neutral">SQL files</span></td><td>Claude (plan approved)</td><td>There is no external DB. Pre-recorded runs let reviewers explore without spending Neurons.</td></tr>
+<tr><td>D18</td><td>25 Oct 2026</td><td>Meaning of "training"</td><td>Fine-tune / LoRA · calibration</td><td><span class="badge ok">Calibration of prompts, tool descriptions and thresholds</span> <span class="badge neutral">fine-tuning</span></td><td>Claude (plan approved)</td><td>Llama works as-is. The real risk is faults not reproducing reliably.</td></tr>
+<tr><td>D19</td><td>25 Oct 2026</td><td>Abuse guard for the public URL</td><td>None · daily run cap</td><td><span class="badge ok">MAX_RUNS_PER_DAY = 30, 429 beyond it</span></td><td>Claude (plan approved)</td><td>Anyone with the workers.dev URL could exhaust the 10,000 Neurons/day budget.</td></tr>
 </tbody></table></div>
       <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
     </main>

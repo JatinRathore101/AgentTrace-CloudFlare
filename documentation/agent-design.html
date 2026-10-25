@@ -146,7 +146,17 @@ TRACE (JSON, truncated fields end with "…"):
 HISTORY: previous chat_messages for this run (oldest first, last 10)
 USER: &lt;question from the Ask-AI panel, default "Why did this run fail?"&gt;</code></pre>
 
-      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+      <h2>Calibration</h2>
+<div class="table-wrap"><table><thead><tr><th>Knob</th><th>Where</th><th>Done when</th></tr></thead><tbody>
+<tr><td>System prompt</td><td><code>runner.ts</code></td><td>S1, S2 and S3 with <code>none</code> succeed 3 out of 3 times on both models</td></tr>
+<tr><td>Tool descriptions</td><td><code>tools.ts</code></td><td><code>wrong_tool</code> makes the model pick the wrong tool in at least 2 out of 3 runs</td></tr>
+<tr><td>Fault strength</td><td><code>tools.ts</code></td><td><code>loop</code> reaches <code>max_steps</code>; <code>token_waste</code> raises prompt tokens at least 3×</td></tr>
+<tr><td>Detector thresholds</td><td><code>detectors.ts</code></td><td>Each fault run fires its detector, and no happy-path run fires a <code>crit</code> finding</td></tr>
+<tr><td>Ask-AI prompt</td><td><code>explain.ts</code></td><td>Answers on the 5 seed runs name the right cause and cite the right spans</td></tr>
+</tbody></table></div>
+<p>Procedure: <a href="testing-guide.html#calibration">testing guide</a>. Runs captured here become the <a href="data-model.html#demo-seed">demo seed</a>.</p>
+
+<div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
     </main>
   </div>
 </div>

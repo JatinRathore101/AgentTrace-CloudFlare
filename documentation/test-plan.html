@@ -28,7 +28,7 @@
 
       <h1>Test plan — AgentTrace</h1>
       <p class="lead">Test cases covering every objective, including negative and regression cases.</p>
-      <dl class="meta"><div><dt>Cases</dt><dd>24</dd></div><div><dt>Envs</dt><dd>local, prod</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+      <dl class="meta"><div><dt>Cases</dt><dd>27</dd></div><div><dt>Envs</dt><dd>local, prod</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
 
 
 <h2>Cases</h2>
@@ -57,6 +57,10 @@
 <tr><td>TC22</td><td>Automated suite</td><td>—</td><td><code>npx vitest run</code> and <code>npm run lint</code></td><td>All pass</td><td>O1–O5</td><td>local</td></tr>
 <tr><td>TC23</td><td>Prod smoke</td><td>Deployed</td><td>Runbook verification block</td><td>scenarios = 3; a run reaches a final status; Observability shows traces</td><td>O6</td><td>prod</td></tr>
 <tr><td>TC24</td><td>Prod demo model</td><td>MODEL_DEFAULT = 3.3 70B</td><td>S1 none on prod</td><td>succeeded; model column shows llama-3.3-70b; AI Gateway log present</td><td>O1, O6</td><td>prod</td></tr>
+<tr><td>TC25</td><td>Seed on an empty DO</td><td><code>SEED_DEMO=true</code>, fresh <code>.wrangler/state</code> or first deploy</td><td>Open the runs list</td><td>5 demo runs with spans and findings; no AI calls made</td><td>O7</td><td>local, prod</td></tr>
+<tr><td>TC26</td><td>No re-seed</td><td>Runs exist (seeded or real)</td><td>Restart the dev server or redeploy</td><td>Run count unchanged, no duplicates</td><td>O7</td><td>local</td></tr>
+<tr><td>TC27</td><td>Daily run cap</td><td><code>MAX_RUNS_PER_DAY=2</code> (temporary)</td><td>Start 3 runs</td><td>Third returns 429 "daily run cap reached"; snackbar shown</td><td>O2</td><td>local, prod</td></tr>
+
 </tbody></table></div>
 <div class="callout note"><span class="ico">📌</span><div><div class="title">Idempotency</div><p>There is no SQL to re-run. The DO schema uses <code>IF NOT EXISTS</code>, and TC11 covers restart idempotency. Re-deploying the same version (TC23 twice) must not lose data.</p></div></div>
 

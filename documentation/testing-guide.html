@@ -53,6 +53,21 @@ npm run lint                # biome check</code></pre>
 <h2>Demo script</h2>
 <ol class='steps'><li>Open the runs list. Click <b>New run</b> → S1 <code>lisbon-weekend</code>, no faults → Start. Watch the timeline fill in.</li><li>Open the finished run. Show the summary, the timeline, a tool span in the drawer, and the cost.</li><li>New run → S1 with the <code>loop</code> fault. It ends as <code>max_steps</code> with <code>loop</code> + <code>max_steps</code> findings.</li><li>On the failed run, open Ask AI → "Why did this run fail?" The answer cites the repeated <code>searchFlights</code> spans.</li><li>Ask a follow-up ("How do I fix the tool?"). The history persists after a reload, which shows memory/state.</li><li>Tick both S1 runs → Compare. Show the token and cost delta and the diverging steps.</li><li>Optional: <code>tool_error</code> and <code>stale_context</code> runs to show the other detectors.</li></ol>
 
+<h2>Calibration</h2>
+<ol class="steps">
+ <li>Run every scenario and fault combination 3 times with the loop below.</li>
+ <li>Compare the result against the <a href="agent-design.html#calibration">done criteria</a>. Adjust the prompt, tool descriptions or thresholds, then repeat.</li>
+ <li>Repeat once on Llama 3.3 70B. Budget: about 6 runs × 405 Neurons ≈ 2,430 Neurons.</li>
+ <li>Export the 5 best runs with API 3 into <code>src/agent/fixtures/demo-runs.json</code> (todo 4.1).</li>
+</ol>
+<pre data-title="terminal · calibration"><code class="language-bash"># calibration loop (local, Llama 3.1 8B first, then MODEL_DEFAULT=3.3 70B)
+for f in none loop tool_error stale_context token_waste wrong_tool; do
+  curl -s -X POST http://localhost:5173/api/runs -H 'content-type: application/json' \
+    -d "{\"scenarioId\":\"lisbon-weekend\",\"faults\":[\"$f\"]}" | jq -r .runId
+  sleep 30
+done
+curl -s 'http://localhost:5173/api/runs?limit=10' | jq '.runs[] | {scenario, faults, status, findings_count}'</code></pre>
+
 <h2>Where to look when something breaks</h2>
 <ul>
  <li>Terminal running <code>npm run dev</code>: route and DO logs.</li>

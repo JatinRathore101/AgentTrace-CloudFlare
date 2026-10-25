@@ -31,3 +31,24 @@ prompt-history/
 - Prompts that only steer the session (for example "check remote") are still prompts and are still recorded.
 - Exception: prompts that ask only for git operations (commit, push, stage, remote, branch, status) are **not** recorded. A prompt that mixes git work with any other change is recorded.
 - Never edit or delete an existing `prompt.md`. If a correction is needed, add a new prompt that explains it.
+
+## Rule 2: Store every key, secret and token in env files
+
+Every key, secret, token, password, account ID or similar value used, created or seen for this project must be saved in an env file, even if nothing uses it yet, so that no value is lost.
+
+### Files
+
+| File | Holds | Committed |
+| --- | --- | --- |
+| `.env` | Real values for tooling and deploys (account IDs, API tokens, emails, URLs) | Never (listed in `.gitignore`) |
+| `.dev.vars` | Real values the Worker reads at runtime during `wrangler dev` | Never (listed in `.gitignore`) |
+| `.env.example` | The same keys as `.env` and `.dev.vars` with empty or placeholder values | Yes |
+
+### Procedure
+
+- Save the value as soon as it appears, in the same turn. Do not defer it.
+- Unused values are kept, with a comment saying where the value came from and which todo step it belongs to.
+- Add every new key to `.env.example` at the same time, without the real value.
+- Never write real values into committed files (code, docs, `wrangler.jsonc`, prompt records other than the verbatim prompt text). Reference the env variable name instead.
+- Never delete a value from `.env` or `.dev.vars`. If a value is rotated or revoked, keep the old one commented out with the date.
+- Deployed Worker secrets are set with `npx wrangler secret put <NAME>` and also recorded in `.dev.vars`.

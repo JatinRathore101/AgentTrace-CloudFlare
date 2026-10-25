@@ -44,6 +44,8 @@ npx wrangler deploy</code></pre>
 <tr><td><code>MODEL_DEFAULT</code></td><td>production</td><td><code>@cf/meta/llama-3.1-8b-instruct-fp8-fast</code></td><td><code>@cf/meta/llama-3.3-70b-instruct-fp8-fast</code></td></tr>
 <tr><td><code>AI_GATEWAY_ID</code></td><td>all</td><td>—</td><td><code>agenttrace</code></td></tr>
 <tr><td><code>MAX_STEPS</code></td><td>all</td><td>—</td><td><code>8</code></td></tr>
+<tr><td><code>MAX_RUNS_PER_DAY</code></td><td>all</td><td>—</td><td><code>30</code></td></tr>
+<tr><td><code>SEED_DEMO</code></td><td>all</td><td>—</td><td><code>true</code></td></tr>
 <tr><td><code>observability.traces.enabled</code></td><td>all</td><td>—</td><td><code>true</code></td></tr>
 </tbody></table></div>
 
@@ -58,6 +60,8 @@ npx wrangler tail agenttrace --format pretty                    # live logs whil
  <li>Dashboard → Workers &amp; Pages → agenttrace → Observability shows traces. The Agents tab shows <code>invoke_agent</code> spans.</li>
  <li>Dashboard → AI → AI Gateway → agenttrace shows the model calls.</li>
 </ul>
+
+<ul><li>Runs list on the live URL shows the 5 seeded demo runs before any new run is started (TC25).</li></ul>
 
 <h2>Rollback</h2>
 <pre data-title="terminal · rollback"><code class="language-bash">npx wrangler deployments list

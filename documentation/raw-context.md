@@ -82,3 +82,13 @@
 ## 25 Oct 2026 16:02 IST — Docs set built (generate-docs)
 - Exception logged as D13: no .sql or liquibase files, because the schema is created in code by the DO.
 - assignment-analysis.html (the condensed brief, which had an inline <style>) was folded into ticket-context.html and removed (D14). Its last content had the vendor name scrubbed under the now-dropped Rule 2. The names and links were restored when folding.
+
+## 25 Oct 2026 22:25 IST — Todo restructured into 6 sections
+- Source: Jatin prompt (prompt-history/2026-10-25T16-54-58Z): "todo is over-complicated". Proposed sections: prerequisites, code, SQL seeding, out-of-code work, training, E2E testing.
+- Old todo: 15 rows plus 3 stretch rows, 9 code phases (1 spike, 2 cleanup, 3 agent core, 4 APIs, 5 UI, 6 detectors + Ask AI, 7 compare, 8 tests, 9 deploy), 11.5 h.
+- Assessment:
+  - SQL seeding: no external DB, so no SQL files. Replaced by JSON fixtures auto-inserted when empty (D17).
+  - Training: no fine-tuning. Replaced by calibration of prompts, tool descriptions and thresholds (D18).
+  - Calibration moved before seeding, because the fixtures are calibrated runs.
+- Gap found: the public URL lets anyone exhaust the Neuron budget. Added MAX_RUNS_PER_DAY = 30 (D19, R14, TC27).
+- Status: Node 22.23.4 installed via nvm and .nvmrc added (todo 1.1 done). The Cloudflare account was in progress in the Claudia tab.

@@ -111,6 +111,22 @@ type TraceAgentState = {
   updatedAt: number;
 };</code></pre>
 
+<h2>Demo seed</h2>
+<ul>
+ <li>Fixture: <code>src/agent/fixtures/demo-runs.json</code>, containing 5 runs captured after calibration (todo section 4), each with <code>run</code>, <code>spans[]</code> and <code>findings[]</code>.</li>
+ <li>Inserted only when <code>runs</code> is empty and the var <code>SEED_DEMO = "true"</code>. It never overwrites real runs, so it is idempotent (TC25, TC26).</li>
+ <li>Seeded runs keep their original ids and timestamps. The scenario name is unchanged, and the runs list shows a <code>demo</code> chip.</li>
+</ul>
+<pre data-title="trace-agent.ts · seed on start"><code class="language-typescript">// TraceAgent.onStart(): after the schema
+if (this.env.SEED_DEMO === "true") {
+  const [{ n }] = this.sql`SELECT count(*) AS n FROM runs`;
+  if (n === 0) {
+    for (const r of demoRuns) {            // import demoRuns from "./fixtures/demo-runs.json"
+      insertRun(r.run); r.spans.forEach(insertSpan); r.findings.forEach(insertFinding);
+    }
+  }
+}</code></pre>
+
 <h2>Retention</h2>
 <ul>
   <li>Kept until deleted. There is no TTL in the MVP. <span class="badge warn">🟡 add a 'delete run' API if storage grows</span></li>
