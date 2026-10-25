@@ -1,0 +1,63 @@
+// DO SQLite schema, executed on every TraceAgent start. Idempotent (IF NOT EXISTS).
+export const SCHEMA_STATEMENTS = [
+  `CREATE TABLE IF NOT EXISTS runs (
+    id TEXT PRIMARY KEY,
+    scenario TEXT NOT NULL,
+    goal TEXT NOT NULL,
+    faults TEXT NOT NULL DEFAULT '[]',
+    model TEXT NOT NULL,
+    status TEXT NOT NULL,
+    final_answer TEXT,
+    error TEXT,
+    steps INTEGER NOT NULL DEFAULT 0,
+    prompt_tokens INTEGER NOT NULL DEFAULT 0,
+    completion_tokens INTEGER NOT NULL DEFAULT 0,
+    neurons REAL NOT NULL DEFAULT 0,
+    cost_usd REAL NOT NULL DEFAULT 0,
+    started_at INTEGER NOT NULL,
+    ended_at INTEGER,
+    is_demo INTEGER NOT NULL DEFAULT 0
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_runs_started ON runs(started_at)`,
+  `CREATE TABLE IF NOT EXISTS spans (
+    id TEXT PRIMARY KEY,
+    run_id TEXT NOT NULL REFERENCES runs(id),
+    seq INTEGER NOT NULL,
+    step INTEGER NOT NULL,
+    kind TEXT NOT NULL,
+    name TEXT NOT NULL,
+    status TEXT NOT NULL,
+    input TEXT,
+    output TEXT,
+    error TEXT,
+    prompt_tokens INTEGER,
+    completion_tokens INTEGER,
+    neurons REAL,
+    started_at INTEGER NOT NULL,
+    ended_at INTEGER NOT NULL,
+    latency_ms INTEGER NOT NULL,
+    gateway_log_id TEXT
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_spans_run ON spans(run_id, seq)`,
+  `CREATE TABLE IF NOT EXISTS findings (
+    id TEXT PRIMARY KEY,
+    run_id TEXT NOT NULL REFERENCES runs(id),
+    detector TEXT NOT NULL,
+    severity TEXT NOT NULL,
+    span_seq INTEGER,
+    message TEXT NOT NULL,
+    evidence TEXT
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_findings_run ON findings(run_id)`,
+  `CREATE TABLE IF NOT EXISTS chat_messages (
+    id TEXT PRIMARY KEY,
+    run_id TEXT NOT NULL REFERENCES runs(id),
+    role TEXT NOT NULL,
+    content TEXT NOT NULL,
+    prompt_tokens INTEGER,
+    completion_tokens INTEGER,
+    neurons REAL,
+    created_at INTEGER NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_chat_run ON chat_messages(run_id, created_at)`,
+];

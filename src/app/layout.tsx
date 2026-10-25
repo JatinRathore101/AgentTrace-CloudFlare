@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Lato } from "next/font/google";
 import "./globals.css";
+import { AppShell } from "@/components/AppShell";
 import { Providers } from "@/components/Providers";
 
 const lato = Lato({
@@ -10,18 +11,17 @@ const lato = Lato({
 });
 
 export const metadata: Metadata = {
-  title: "Company Intelligence Dashboard",
+  title: "AgentTrace",
+  description: "Observability and debugging for AI agents, built on Cloudflare Workers AI and Durable Objects.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={lato.variable} suppressHydrationWarning>
-        <Providers>{children}</Providers>
+        <Providers>
+          <AppShell>{children}</AppShell>
+        </Providers>
       </body>
     </html>
   );

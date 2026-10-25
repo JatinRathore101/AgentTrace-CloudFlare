@@ -1,6 +1,7 @@
 // Single Worker: agent routes (/agents/*) first, then the Next.js app served by vinext.
-import handler from "vinext/server/fetch-handler";
+
 import { routeAgentRequest } from "agents";
+import handler from "vinext/server/fetch-handler";
 
 export { TraceAgent } from "../src/agent/trace-agent";
 

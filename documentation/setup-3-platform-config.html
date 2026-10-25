@@ -53,7 +53,7 @@ npx vinext init --platform cloudflare --name agenttrace --legacy-wrangler-cloudf
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["TraceAgent"] }],  // SQLite-backed DO (Free plan)
   "observability": { "enabled": true, "traces": { "enabled": true } },
   "vars": {
-    "MODEL_DEFAULT": "@cf/meta/llama-3.1-8b-instruct-fp8-fast",   // switch to llama-3.3-70b for the demo
+    "MODEL_DEFAULT": "@cf/zai-org/glm-4.7-flash",   // switch to llama-3.3-70b for the demo
     "AI_GATEWAY_ID": "default",
     "MAX_STEPS": "8",
     "MAX_RUNS_PER_DAY": "30",                // abuse guard for the public URL (D19)

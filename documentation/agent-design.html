@@ -96,6 +96,8 @@ async function executeRun(run, ctx) {
 }</code></pre>
 <div class="callout hypothesis"><span class="ico">🟡</span><div><div class="title">Tool-call message format</div><p>Llama 3.3 tool calling via <code>tools</code> + <code>tool_calls</code> is documented. The exact shape of the follow-up <code>assistant</code>/<code>tool</code> messages is shown in the traditional function-calling guide for another model. Confirm against Llama 3.3 in phase 3 and adjust.</p></div></div>
 
+<div class="callout confirmed"><span class="ico">✅</span><div><div class="title">As built</div><p>Tools are sent in OpenAI format (D24). <code>MODEL_PARAMS</code> in <code>scenarios.ts</code> adds <code>chat_template_kwargs.enable_thinking=false</code> for GLM (D25). <code>parseModelReply</code> accepts both the native and the OpenAI response shapes. The loop is started with <code>this.schedule(0, "executeRun")</code> (D26).</p></div></div>
+
 <h2>Detectors</h2>
 <div class="table-wrap"><table><thead><tr><th>Detector</th><th>Rule</th><th>Severity</th></tr></thead><tbody>
 <tr><td><code>loop</code></td><td>Same tool + identical arguments ≥ 3 times in a run</td><td><span class="badge crit">crit</span></td></tr>
@@ -114,7 +116,7 @@ async function executeRun(run, ctx) {
 <pre data-title="cost.ts"><code class="language-typescript">// src/agent/cost.ts
 export const RATES = {                     // Neurons per 1M tokens (Workers AI pricing page, 25 Oct 2026)
   "@cf/meta/llama-3.3-70b-instruct-fp8-fast": { in: 26668, out: 204805 },
-  "@cf/meta/llama-3.1-8b-instruct-fp8-fast":  { in: 4119,  out: 34868 },
+  "@cf/zai-org/glm-4.7-flash":                { in: 5500,  out: 36364 },
 } as const;
 export const USD_PER_1K_NEURONS = 0.011;
 export const FREE_NEURONS_PER_DAY = 10_000;

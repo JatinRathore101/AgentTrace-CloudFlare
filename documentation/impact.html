@@ -45,10 +45,10 @@
 
 <h2>Free-tier budget</h2>
 <div class="table-wrap"><table><thead><tr><th>Workload</th><th>Assumption</th><th>Neurons each</th><th>Max per day (10,000 Neurons)</th></tr></thead><tbody>
-<tr><td>Agent run, Llama 3.3 70B</td><td>≈ 5 LLM calls, ≈ 7,500 input + 1,000 output tokens</td><td class="num">≈ 405</td><td class="num">≈ 24</td></tr>
-<tr><td>Agent run, Llama 3.1 8B (dev)</td><td>same token profile</td><td class="num">≈ 66</td><td class="num">≈ 150</td></tr>
+<tr><td>Agent run, Llama 3.3 70B</td><td>≈ 5 LLM calls, ≈ 7,500 input + 1,000 output tokens (measured: 81 for the 3-call Tokyo run)</td><td class="num">≈ 405</td><td class="num">≈ 24</td></tr>
+<tr><td>Agent run, GLM 4.7 Flash (dev)</td><td>measured: 12.5 (Tokyo happy) to 69 (Lisbon + loop)</td><td class="num">≈ 13–69</td><td class="num">≈ 145–770</td></tr>
 <tr><td>Ask-AI answer, Llama 3.3 70B</td><td>≈ 5,000 input + 400 output tokens</td><td class="num">≈ 215</td><td class="num">≈ 46</td></tr>
-<tr><td>Ask-AI answer, Llama 3.1 8B</td><td>same</td><td class="num">≈ 35</td><td class="num">≈ 285</td></tr>
+<tr><td>Ask-AI answer, GLM 4.7 Flash (thinking off)</td><td>≈ 5,000 input + 300 output tokens</td><td class="num">≈ 40</td><td class="num">≈ 250</td></tr>
 </tbody></table></div>
 <div class="callout hypothesis"><span class="ico">🟡</span><div><div class="title">Estimates, verify after phase 3</div><p>Neurons = input tokens × rate_in / 1M + output tokens × rate_out / 1M. Rates come from the <a href='platform-research.html#workers-ai-and-llama-3-3'>pricing page</a>. Replace the assumed token counts with real ones from the first recorded runs.</p></div></div>
 
@@ -62,7 +62,7 @@
 <div class="table-wrap"><table><thead><tr><th>Risk</th><th>Likelihood</th><th>Mitigation</th></tr></thead><tbody>
 <tr><td>vinext beta cannot export the <code>TraceAgent</code> DO from the custom worker entry, or breaks on MUI/Emotion SSR</td><td><span class="badge ok">✅ resolved in 2.1</span></td><td>Phase-1 spike, time-boxed to 1.5 h. Fallback: the <code>agents-starter</code> template (Vite + React SPA) with the same components (D3).</td></tr>
 <tr><td>The 10 ms CPU limit per request on Free is exceeded by SSR</td><td><span class="badge warn">🟡 medium</span></td><td>Pages are <code>&quot;use client&quot;</code> shells. Route handlers only proxy to the DO. Payloads are capped (span I/O truncated to 32 KB).</td></tr>
-<tr><td>The 10,000 Neurons/day budget is exhausted during development</td><td><span class="badge ok">✅ likely</span></td><td>Develop on Llama 3.1 8B via the <code>MODEL_DEV</code> var. Mock the AI binding in tests. Show a clear 'daily AI quota reached' error.</td></tr>
+<tr><td>The 10,000 Neurons/day budget is exhausted during development</td><td><span class="badge ok">✅ likely</span></td><td>Develop on GLM 4.7 Flash via <code>MODEL_DEFAULT</code> (D23). Mock the AI binding in tests. Show a clear 'daily AI quota reached' error.</td></tr>
 <tr><td>Llama ignores tools or returns malformed <code>tool_calls</code></td><td><span class="badge warn">🟡 medium</span></td><td>Validate the arguments with a small schema, record a <code>tool_error</code> span, cap the loop at <code>maxSteps = 8</code>. That is itself a failure AgentTrace shows.</td></tr>
 <tr><td>Faults do not reproduce deterministically (model non-determinism)</td><td><span class="badge warn">🟡 medium</span></td><td>Faults are injected in tool code, not only in prompts. Detectors read spans, not model intent. Use <code>seed</code> where supported.</td></tr>
 <tr><td><code>@callable</code> decorators fail under Vite 8</td><td><span class="badge ok">✅ documented</span></td><td>Add the <code>agents()</code> plugin from <code>agents/vite</code>, or avoid decorators by calling DO RPC methods from route handlers (the chosen design).</td></tr>

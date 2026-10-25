@@ -35,8 +35,8 @@
 <pre data-title="terminal"><code class="language-bash">cd /Users/sanju/my-code/repos/ai-powered-application-Cloudflare
 npm install
 npx wrangler login        # once; local AI calls hit the real service
-npm run dev:vinext        # vinext dev server, open http://localhost:3001</code></pre>
-<div class="callout warning"><span class="ico">⚠️</span><div><div class="title">Local runs spend real Neurons</div><p>Keep <code>MODEL_DEFAULT</code> on Llama 3.1 8B while developing. Each 3.3 70B run costs about 6× more. Durable Object data is local only, stored in <code>.wrangler/state/</code>.</p></div></div>
+npm run dev                # vinext dev server (alias of dev:vinext), open http://localhost:3001</code></pre>
+<div class="callout warning"><span class="ico">⚠️</span><div><div class="title">Local runs spend real Neurons</div><p>Keep <code>MODEL_DEFAULT</code> on GLM 4.7 Flash while developing (measured 13–69 Neurons per run). A Llama 3.3 70B run measured 81 Neurons for the simplest scenario. Durable Object data is local only, stored in <code>.wrangler/state/</code>.</p></div></div>
 
 <h2>Automated tests</h2>
 <pre data-title="terminal"><code class="language-bash">npx vitest run              # all unit tests
@@ -60,7 +60,7 @@ npm run lint                # biome check</code></pre>
  <li>Repeat once on Llama 3.3 70B. Budget: about 6 runs × 405 Neurons ≈ 2,430 Neurons.</li>
  <li>Export the 5 best runs with API 3 into <code>src/agent/fixtures/demo-runs.json</code> (todo 4.1).</li>
 </ol>
-<pre data-title="terminal · calibration"><code class="language-bash"># calibration loop (local, Llama 3.1 8B first, then MODEL_DEFAULT=3.3 70B)
+<pre data-title="terminal · calibration"><code class="language-bash"># calibration loop (local, GLM 4.7 Flash first, then MODEL_DEFAULT=Llama 3.3 70B)
 for f in none loop tool_error stale_context token_waste wrong_tool; do
   curl -s -X POST http://localhost:3001/api/runs -H 'content-type: application/json' \
     -d "{\"scenarioId\":\"lisbon-weekend\",\"faults\":[\"$f\"]}" | jq -r .runId

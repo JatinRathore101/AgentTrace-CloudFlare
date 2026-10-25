@@ -1,3 +1,3 @@
-export { store, persistor } from "./store";
-export type { RootState, AppDispatch } from "./store";
 export { createLocalStorage, createSessionStorage } from "./storage";
+export type { AppDispatch, RootState } from "./store";
+export { persistor, store } from "./store";

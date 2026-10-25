@@ -28,7 +28,7 @@
 
       <h1>Decisions — AgentTrace</h1>
       <p class="lead">Every question asked and decision taken, in order. Append-only.</p>
-      <dl class="meta"><div><dt>Rows</dt><dd>22</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+      <dl class="meta"><div><dt>Rows</dt><dd>26</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
 
 <h2>Decision log</h2>
 <div class="table-wrap"><table><thead><tr><th>#</th><th>Date</th><th>Question / topic</th><th>Options offered</th><th>Decision</th><th>Decided by</th><th>Reason</th></tr></thead><tbody>
@@ -54,6 +54,10 @@
 <tr><td>D20</td><td>26 Oct 2026</td><td>AI Gateway id</td><td>agenttrace (custom) · default (auto-created)</td><td><span class="badge ok">default</span></td><td>Claude (2.1 spike)</td><td>A custom id failed with AiGatewayError 2001. Only <code>default</code> is auto-created, so no dashboard step is needed.</td></tr>
 <tr><td>D21</td><td>26 Oct 2026</td><td>Keep .env out of the Worker</td><td>Rely on .env · add .dev.vars</td><td><span class="badge ok">Empty .dev.vars (git-ignored)</span></td><td>Claude (2.1 spike)</td><td>Without .dev.vars, Wrangler loads .env (account ID, OAuth tokens) into the local Worker env.</td></tr>
 <tr><td>D22</td><td>26 Oct 2026</td><td>agents() Vite plugin</td><td>Add for @callable · skip</td><td><span class="badge ok">Skip</span></td><td>Claude (2.1 spike)</td><td>TraceAgent is called through DO RPC from route handlers; no decorators are used.</td></tr>
+<tr><td>D23</td><td>26 Oct 2026</td><td>Development model</td><td>Llama 3.1 8B (D12) · GLM 4.7 Flash · Qwen3 30B</td><td><span class="badge ok">GLM 4.7 Flash in dev, Llama 3.3 70B for the demo</span></td><td>Claude (2.3)</td><td>The Workers AI catalog lists no function calling for llama-3.1-8b-instruct-fp8-fast, so it cannot drive the agent. GLM 4.7 Flash supports it, is not paid-only, and is what Cloudflare's Lunch Agent example uses. Supersedes D12.</td></tr>
+<tr><td>D24</td><td>26 Oct 2026</td><td>Tool schema format</td><td>Native {name, description, parameters} · OpenAI {type: function, function}</td><td><span class="badge ok">OpenAI format</span></td><td>Claude (live test)</td><td>GLM rejects the native shape with 8001 Invalid input. Llama 3.3 accepts both.</td></tr>
+<tr><td>D25</td><td>26 Oct 2026</td><td>GLM reasoning</td><td>Raise max_tokens · reasoning_effort low · chat_template_kwargs.enable_thinking=false</td><td><span class="badge ok">enable_thinking=false via MODEL_PARAMS</span></td><td>Claude (live test)</td><td>With thinking on, GLM spent all 600 tokens on hidden reasoning and returned empty content. Only enable_thinking=false fixed it.</td></tr>
+<tr><td>D26</td><td>26 Oct 2026</td><td>Starting the loop</td><td>this.schedule(0, …) · ctx.waitUntil</td><td><span class="badge ok">this.schedule(0, "executeRun")</span></td><td>Claude (2.3, verified live)</td><td>Durable alarm-based scheduling; POST /api/runs returns at once and the loop survives the request.</td></tr>
 </tbody></table></div>
       <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
     </main>

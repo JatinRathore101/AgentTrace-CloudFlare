@@ -105,3 +105,17 @@
 - GET /agents/trace-agent/default (plain HTTP) -> 404: Agent has no onRequest yet; WebSocket path untested (needed only for live progress, optional).
 - `npm run build:vinext` ok; `wrangler deploy --dry-run --config dist/server/wrangler.json`: 2338.96 KiB / gzip 657.02 KiB; bindings TraceAgent, AI, ASSETS, 5 vars.
 - Docs corrected: dev port 5173 -> 3001, gateway agenttrace -> default, real vite config, runbook build/deploy commands.
+
+## 26 Oct 2026 04:30 IST — Todo 2.2–2.6 implemented (code)
+- 2.2: removed company APIs/components/slices, setup.ts, db.ts, public/, postcss + tailwind, deps better-sqlite3 json5 winston react-icons ts-node tsx; new AppShell/Header/Sidebar; logger = console wrapper; theme info.dark gradient removed; scripts dev/build/preview/deploy/typecheck/test/lint (+ :vinext aliases).
+- 2.3: src/agent/{types,scenarios,tools,runner,detectors,cost,explain,compare,schema,trace-agent}.ts + fixtures/demo-runs.json ([] until todo 4.1). RPC returns Result values (custom errors do not cross DO RPC).
+- 2.4/2.5: API routes scenarios, runs, runs/[id] (GET, DELETE), runs/[id]/explain, compare; pages /, /runs/[id], /compare; components runs/*, run/*, compare/*.
+- 2.6: Vitest 3.2.7, 6 files / 40 tests (tools, detectors, cost, runner with scripted AI, explain+compare, validation). Biome scoped to code; formatter lineWidth 120.
+- Dev model change: Workers AI models search (task Text Generation) shows no function_calling for llama-3.1-8b-instruct-fp8-fast -> GLM 4.7 Flash (D23).
+- Live 1: GLM run failed `8001: Invalid input` (native tools). REST test: GLM NATIVE -> AiError Invalid input; GLM OPENAI -> tool_calls ok; Llama 3.3 both ok (D24).
+- Live 2: Tokyo happy on GLM -> succeeded, 2 steps, 3 spans, 1241/157 tokens, 12.54 Neurons, no findings.
+- Live 3: Lisbon+loop -> concurrent POST returned 429; run succeeded after 5 steps (model gave up) with loop x2 + missing_tool. Ask AI returned empty -> REST: finish_reason length, reasoning_content 2466 chars, content "" at 600 tokens. enable_thinking=false -> 108 tokens, content ok; reasoning_effort low / thinking.disabled -> still empty (D25). Explain now returns 502 on empty content and stores nothing; bad run deleted.
+- Live 4: Lisbon+loop -> max_steps, 8 steps, 59 Neurons, findings loop/max_steps/missing_tool; Ask AI cited spans [#5..#19] with a Fix line; follow-up used memory (4 chat messages). Llama 3.3 Tokyo happy -> succeeded, 3 steps, 80.9 Neurons. Compare happy(Llama) vs loop(GLM): steps +5, prompt tokens +6215, findings onlyB loop/max_steps/missing_tool, sameScenario false.
+- Errors: unknown run 404, bad scenario 400, a=b 400, limit=0 400. Pages /, /runs/:id, /compare return 200.
+- Browser check (Claude in Chrome): body font resolved to Times because MUI CssBaseline set fontFamily inherit -> theme fontFamily var(--font-lato). Ask-AI span links invisible on dark (primary.main) -> info.main; grouped citations [#5, #7] now linked. Compare Errors tile showed an empty A→B line -> hidden when no per-run values.
+- Final gate: tsc ok, biome 70 files clean, vitest 40/40, build ok, dry-run 2300.94 KiB / gzip 646.84 KiB.

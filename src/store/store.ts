@@ -1,40 +1,25 @@
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import {
-  persistStore,
-  persistReducer,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from "redux-persist";
-import uiReducer from "./slices/uiSlice";
-import optionsReducer from "./slices/optionsSlice";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { FLUSH, PAUSE, PERSIST, PURGE, persistReducer, persistStore, REGISTER, REHYDRATE } from "redux-persist";
 import themeReducer from "./slices/themeSlice";
-import companiesTableReducer from "./slices/companiesTableSlice";
-import savedFiltersReducer from "./slices/savedFiltersSlice";
+import uiReducer from "./slices/uiSlice";
 import { createLocalStorage, createSessionStorage } from "./storage";
 
-// Theme is persisted in localStorage so it survives across sessions
+// Theme is persisted in localStorage so it survives across sessions.
 const themePersistConfig = {
   key: "theme",
   storage: createLocalStorage(),
 };
 
-// UI state is persisted in sessionStorage so it resets on tab close
+// UI state is persisted in sessionStorage so it resets on tab close.
 const rootPersistConfig = {
   key: "app-root",
   storage: createSessionStorage(),
-  whitelist: ["ui", "options", "companiesTable"],
+  whitelist: ["ui"],
 };
 
 const rootReducer = combineReducers({
   ui: uiReducer,
   theme: persistReducer(themePersistConfig, themeReducer),
-  options: optionsReducer,
-  companiesTable: companiesTableReducer,
-  savedFilters: savedFiltersReducer,
 });
 
 export const store = configureStore({

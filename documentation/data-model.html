@@ -104,6 +104,8 @@ CREATE TABLE IF NOT EXISTS chat_messages (
 CREATE INDEX IF NOT EXISTS idx_chat_run ON chat_messages(run_id, created_at);</code></pre>
 <div class="callout note"><span class="ico">📌</span><div><div class="title">No external migrations</div><p><code>CREATE ... IF NOT EXISTS</code> runs on every DO start, so it is idempotent. A future column change is done with <code>ALTER TABLE</code> guarded by a <code>PRAGMA table_info</code> check. Free plan limits: 2 MB per row, 100 bound parameters per query.</p></div></div>
 
+<div class="callout note"><span class="ico">📌</span><div><div class="title">As built (src/agent/schema.ts)</div><p>The implemented schema adds <code>runs.is_demo</code> (seeded rows, excluded from the daily cap), <code>spans.neurons</code> and <code>chat_messages.neurons</code> (Neurons reported by Workers AI), and an index on <code>runs(started_at)</code>.</p></div></div>
+
 <h2>Synced state</h2>
 <pre data-title="TraceAgentState"><code class="language-typescript">// Agent state (setState → every connected client via WebSocket)
 type TraceAgentState = {

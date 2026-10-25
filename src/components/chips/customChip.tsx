@@ -1,5 +1,5 @@
-import React from "react";
 import { Typography } from "@mui/material";
+import type React from "react";
 
 type ChipState = "BLUE" | "PURPLE" | "RED" | "GREEN" | "YELLOW" | "GREY";
 
@@ -28,15 +28,8 @@ interface CustomChipProps {
   fontSize?: string;
 }
 
-const CustomChip: React.FC<CustomChipProps> = ({
-  chipValue,
-  chipState,
-  fontSize = "12px",
-}) => {
-  if (
-    (!chipValue && chipValue !== 0) ||
-    (typeof chipValue === "string" && !chipValue.trim())
-  ) {
+const CustomChip: React.FC<CustomChipProps> = ({ chipValue, chipState, fontSize = "12px" }) => {
+  if ((!chipValue && chipValue !== 0) || (typeof chipValue === "string" && !chipValue.trim())) {
     return null;
   }
 
@@ -54,7 +47,6 @@ const CustomChip: React.FC<CustomChipProps> = ({
         fontSize,
         fontStyle: "normal",
         width: "fit-content",
-        fontFamily: "Lato",
         fontWeight: 700,
       }}
     >

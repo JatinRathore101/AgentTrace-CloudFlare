@@ -49,11 +49,11 @@
   W -- routeAgentRequest --> A
   W -- else --> R
   A -- env.AI.run + gateway --> G[AI Gateway · default]
-  G --> M[Workers AI · Llama 3.3 70B / 3.1 8B]
+  G --> M[Workers AI · Llama 3.3 70B / GLM 4.7 Flash]
   A -- spans --> O[Workers Observability traces]</pre>
 <div class="table-wrap"><table><thead><tr><th>Component</th><th>Cloudflare product</th><th>Assignment component</th></tr></thead><tbody>
 <tr><td><code>TraceAgent</code></td><td>Agents SDK on Durable Objects (SQLite)</td><td>Workflow / coordination + Memory / state</td></tr>
-<tr><td>Model calls</td><td>Workers AI · Llama 3.3 70B (demo), 3.1 8B (dev)</td><td>LLM</td></tr>
+<tr><td>Model calls</td><td>Workers AI · Llama 3.3 70B (demo), GLM 4.7 Flash (dev)</td><td>LLM</td></tr>
 <tr><td>Gateway</td><td>AI Gateway <code>default</code> (logs, analytics, caching)</td><td>LLM (observability)</td></tr>
 <tr><td>Ask-AI chat + New run form</td><td>Workers (vinext Next.js app)</td><td>User input via chat</td></tr>
 <tr><td>Platform traces</td><td>Workers Observability <code>traces.enabled</code></td><td>Supporting</td></tr>

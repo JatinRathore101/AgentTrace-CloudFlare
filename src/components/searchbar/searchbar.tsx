@@ -1,15 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import {
-  Box,
-  IconButton,
-  InputAdornment,
-  Typography,
-  TextField,
-} from "@mui/material";
-import { IoMdClose } from "react-icons/io";
-import { FcSearch } from "react-icons/fc";
+import CloseIcon from "@mui/icons-material/Close";
+import SearchIcon from "@mui/icons-material/Search";
+import { Box, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
+import type React from "react";
+import { useEffect, useState } from "react";
 
 type SearchBarProps = {
   label?: string;
@@ -76,18 +71,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
           input: {
             startAdornment: (
               <Box sx={{ mr: 2, display: "flex", alignItems: "center" }}>
-                <FcSearch size={20} />
+                <SearchIcon fontSize="small" color="action" />
               </Box>
             ),
             endAdornment: (
               <InputAdornment position="end">
                 {inputValue && (
-                  <IconButton
-                    onClick={() => setInputValue("")}
-                    edge="end"
-                    aria-label="clear"
-                  >
-                    <IoMdClose size={18} />
+                  <IconButton onClick={() => setInputValue("")} edge="end" aria-label="clear">
+                    <CloseIcon fontSize="small" />
                   </IconButton>
                 )}
               </InputAdornment>

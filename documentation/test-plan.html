@@ -33,7 +33,7 @@
 
 <h2>Cases</h2>
 <div class="table-wrap"><table><thead><tr><th>#</th><th>Scenario</th><th>Preconditions / data</th><th>Steps</th><th>Expected result</th><th>Covers</th><th>Env</th></tr></thead><tbody>
-<tr><td>TC1</td><td>Happy path S1</td><td>Llama 3.1 8B, no faults</td><td>New run S1 none</td><td>status succeeded; spans ≥ 5 (llm + 4 tools); 0 crit findings; final answer mentions weather, flight and INR budget</td><td>O1, O2</td><td>local</td></tr>
+<tr><td>TC1</td><td>Happy path S1</td><td>GLM 4.7 Flash, no faults</td><td>New run S1 none</td><td>status succeeded; spans ≥ 5 (llm + 4 tools); 0 crit findings; final answer mentions weather, flight and INR budget</td><td>O1, O2</td><td>local</td></tr>
 <tr><td>TC2</td><td>Happy path S2</td><td>—</td><td>New run S2 none</td><td>succeeded; exactly 1 tool span getWeather</td><td>O1</td><td>local</td></tr>
 <tr><td>TC3</td><td>Loop fault</td><td>—</td><td>S1 + loop</td><td>status max_steps; findings loop + max_steps; steps = 8</td><td>O1, O4</td><td>local</td></tr>
 <tr><td>TC4</td><td>Tool error</td><td>—</td><td>S1 or S3 + tool_error</td><td>error span on convertCurrency with message; finding tool_error</td><td>O4</td><td>local</td></tr>

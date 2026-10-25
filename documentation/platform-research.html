@@ -76,6 +76,16 @@
 <tr><td>Wrangler's OAuth login has no AI Gateway API scope (<code>10000 Authentication error</code> on the gateways endpoint).</td><td><span class="badge ok">✅ observed</span></td><td>Cloudflare API call</td></tr>
 </tbody></table></div>
 
+<h2>Verified while building 2.2–2.6</h2>
+<div class="table-wrap"><table><thead><tr><th>Fact</th><th>State</th><th>Source</th></tr></thead><tbody>
+<tr><td><code>@cf/meta/llama-3.1-8b-instruct-fp8-fast</code> is not listed with function calling; function-calling models include Llama 3.3 70B, GLM 4.7 Flash, Qwen3 30B, Llama 4 Scout, Mistral Small 3.1, gpt-oss.</td><td><span class="badge ok">✅ observed</span></td><td>Workers AI models search API</td></tr>
+<tr><td>OpenAI-style tools (<code>{type: "function", function: {...}}</code>) work on GLM 4.7 Flash and Llama 3.3; the native shape fails on GLM with <code>8001 Invalid input</code>.</td><td><span class="badge ok">✅ observed</span></td><td>REST <code>/ai/run</code> test</td></tr>
+<tr><td>Llama 3.3 returns both shapes at once (<code>response</code> + <code>tool_calls</code> and <code>choices[]</code>); GLM returns only OpenAI <code>choices[]</code> with string <code>arguments</code>.</td><td><span class="badge ok">✅ observed</span></td><td>REST <code>/ai/run</code> test</td></tr>
+<tr><td>GLM 4.7 Flash reasons by default (<code>reasoning_content</code>) and can return empty content at <code>finish_reason: length</code>; <code>chat_template_kwargs: {enable_thinking: false}</code> disables it. <code>reasoning_effort</code> and <code>thinking.type</code> do not.</td><td><span class="badge ok">✅ observed</span></td><td>REST <code>/ai/run</code> test</td></tr>
+<tr><td>Assistant <code>tool_calls</code> + <code>role: "tool"</code> follow-up messages are accepted by both models; full multi-step loops completed.</td><td><span class="badge ok">✅ observed</span></td><td>local runs</td></tr>
+<tr><td><code>this.schedule(0, "executeRun", payload)</code> runs the loop after the RPC returns.</td><td><span class="badge ok">✅ observed</span></td><td>local runs</td></tr>
+</tbody></table></div>
+
 <h2>Free plan limits</h2>
 <div class="table-wrap"><table><thead><tr><th>Fact</th><th>State</th><th>Source</th></tr></thead><tbody>
 <tr><td>Workers Free: 100,000 requests/day; <b>10 ms CPU per invocation</b>; 128 MB memory; 50 external subrequests.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers/platform/limits/">source ↗</a></td></tr>

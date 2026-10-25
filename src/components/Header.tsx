@@ -1,27 +1,25 @@
 "use client";
 
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
+import MenuIcon from "@mui/icons-material/Menu";
+import TimelineIcon from "@mui/icons-material/Timeline";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
 import { useTheme } from "@mui/material/styles";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/store";
-import { uiSliceActions } from "@/store/slices/uiSlice";
 import { themeSliceActions } from "@/store/slices/themeSlice";
+import { uiSliceActions } from "@/store/slices/uiSlice";
 
 export function Header() {
   const dispatch = useDispatch();
   const theme = useTheme();
   const themeMode = useSelector((state: RootState) => state.theme?.themeMode ?? "dark");
   const sidebarOpen = useSelector((state: RootState) => state.ui?.sidebarOpen ?? true);
-
-  function handleThemeToggle() {
-    dispatch(themeSliceActions.toggleThemeMode());
-  }
 
   return (
     <AppBar
@@ -32,7 +30,6 @@ export function Header() {
         borderBottom: `1px solid ${theme.palette.divider}`,
         backgroundColor: theme.palette.background.paper,
         color: theme.palette.text.primary,
-        width: "100%",
       }}
     >
       <Toolbar sx={{ gap: 1 }}>
@@ -44,25 +41,15 @@ export function Header() {
         >
           <MenuIcon />
         </IconButton>
-
-        <Typography
-          sx={{ fontSize: { xs: "17px", md: "20px" }, fontWeight: 700 }}
-        >
-          
-        </Typography>
-        <Typography
-          sx={{
-            flexGrow: 1,
-            fontSize: { xs: "21px", md: "24px" },
-            fontWeight: 600,
-            textAlign: "center",
-          }}
-        >
-          Company Intelligence Dashboard
-        </Typography>
-
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexGrow: 1 }}>
+          <TimelineIcon sx={{ color: theme.palette.info.main }} />
+          <Typography sx={{ fontSize: { xs: "18px", md: "21px" }, fontWeight: 700 }}>AgentTrace</Typography>
+          <Typography sx={{ display: { xs: "none", md: "block" }, color: "text.secondary", fontSize: "14px", ml: 1 }}>
+            AI agent observability &amp; debugging
+          </Typography>
+        </Box>
         <IconButton
-          onClick={handleThemeToggle}
+          onClick={() => dispatch(themeSliceActions.toggleThemeMode())}
           aria-label="toggle theme"
           sx={{ color: theme.palette.text.primary }}
         >

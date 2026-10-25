@@ -28,7 +28,7 @@
 
       <h1>AgentTrace — Cloudflare AI assignment</h1>
       <p class="lead">End-to-end plan to build AgentTrace, an AI agent observability and debugging dashboard, as a Next.js app on Cloudflare's Free plan.</p>
-      <dl class="meta"><div><dt>Task type</dt><dd>feature (new app)</dd></div><div><dt>Status</dt><dd><span class="badge info">ready for implementation</span></dd></div><div><dt>Ticket(s)</dt><dd><a href="https://job-boards.greenhouse.io/cloudflare/jobs/8212060?gh_jid=8212060">Greenhouse 8212060</a></dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+      <dl class="meta"><div><dt>Task type</dt><dd>feature (new app)</dd></div><div><dt>Status</dt><dd><span class="badge info">implemented (section 2)</span></dd></div><div><dt>Ticket(s)</dt><dd><a href="https://job-boards.greenhouse.io/cloudflare/jobs/8212060?gh_jid=8212060">Greenhouse 8212060</a></dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
 
 
 <h2>Overview</h2>
@@ -37,7 +37,7 @@
  <li><b>Assignment fit:</b> Llama 3.3 on Workers AI (LLM) · Agents SDK <code>TraceAgent</code> Durable Object (coordination) · Ask-AI chat (input) · DO SQLite plus synced state (memory). <span class="badge ok">✅ confirmed</span></li>
  <li><b>Stack:</b> Next.js via vinext on one Worker, built from the <code>companies-dashboard</code> boilerplate. AI Gateway and Workers Observability are on. Everything stays on the Free plan. <span class="badge ok">✅ confirmed</span></li>
  <li><b>Biggest risk resolved:</b> the 2.1 spike proved vinext + Durable Object + Workers AI in one Worker. <span class="badge ok">✅ 26 Oct 2026</span></li>
- <li><b>Next step:</b> finish <a href="todo.html">todo</a> section 1 (account, subdomain, <code>wrangler login</code>), then 2.2 boilerplate cleanup.</li>
+ <li><b>Next step:</b> sections 1 and 2 are done; next is <a href="todo.html">todo</a> section 3 (calibration).</li>
 </ul>
 
 <h2>Docs</h2>
@@ -47,7 +47,7 @@
 <div class="table-wrap"><table><thead><tr><th>#</th><th>Question</th><th>Who can answer</th><th>Blocking?</th></tr></thead><tbody>
 <tr><td>1</td><td>Can vinext export the <code>TraceAgent</code> DO from a custom worker entry?</td><td>Todo phase 1 spike (Jatin + Claude)</td><td><span class="badge ok">resolved: works (2.1)</span></td></tr>
 <tr><td>2</td><td>Exact follow-up message format for Llama 3.3 tool calls (assistant/tool roles)</td><td>Phase 3, first live call</td><td><span class="badge neutral">no</span></td></tr>
-<tr><td>3</td><td>Behaviour of <code>this.schedule(0, …)</code> for starting the loop (<code>getAgentByName</code> verified in 2.1)</td><td>Phase 1 spike</td><td><span class="badge neutral">no</span></td></tr>
+<tr><td>3</td><td>Behaviour of <code>this.schedule(0, …)</code> for starting the loop (<code>getAgentByName</code> verified in 2.1)</td><td>Phase 1 spike</td><td><span class="badge ok">resolved: works (2.3)</span></td></tr>
 <tr><td>4</td><td>CPU limit for Durable Objects on Free: 10 ms or 30 s (docs unclear). The loop is I/O-bound, so this is low risk.</td><td>First deploy (watch errors)</td><td><span class="badge neutral">no</span></td></tr>
 <tr><td>5</td><td>workers.dev subdomain name</td><td>Jatin (Setup 1)</td><td><span class="badge neutral">no</span></td></tr>
 <tr><td>6</td><td>Is the GitHub repo public?</td><td>Jatin</td><td><span class="badge crit">yes, before submit</span></td></tr>
