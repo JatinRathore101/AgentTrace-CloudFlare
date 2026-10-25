@@ -37,7 +37,7 @@
 <tr><td>vinext is <b>beta</b>. Run <code>npx vinext check</code> before adopting it.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers/framework-guides/web-apps/nextjs/">source ↗</a></td></tr>
 <tr><td>Supported: App Router, route handlers, RSC, Server Actions, SSR streaming, middleware. Bindings via <code>import { env } from &quot;cloudflare:workers&quot;</code>.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers/framework-guides/web-apps/nextjs/">source ↗</a></td></tr>
 <tr><td><code>npx vinext init</code> adds <code>dev:vinext</code>/<code>build:vinext</code> scripts and <code>vite.config.ts</code>. By default it generates a typed <code>cloudflare.config.ts</code>; <code>--legacy-wrangler-cloudflare-init</code> keeps wrangler.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://github.com/cloudflare/vinext/blob/main/README.md">source ↗</a></td></tr>
-<tr><td>A custom worker entry can wrap <code>vinext/server/fetch-handler</code>. Exporting a DO class from the same entry is not documented.</td><td><span class="badge warn">🟡 inferred</span></td><td><a href="https://github.com/cloudflare/vinext/blob/main/examples/app-router-cloudflare/worker/index.ts">source ↗</a></td></tr>
+<tr><td>A custom worker entry can wrap <code>vinext/server/fetch-handler</code>. Exporting a DO class from the same entry is not documented, but works (verified in the 2.1 spike).</td><td><span class="badge ok">✅ verified</span></td><td><a href="https://github.com/cloudflare/vinext/blob/main/examples/app-router-cloudflare/worker/index.ts">source ↗</a></td></tr>
 <tr><td>Known gaps: <code>&quot;use cache&quot;</code>/PPR incomplete, build-time font/image optimisation missing.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://github.com/cloudflare/vinext/blob/main/README.md">source ↗</a></td></tr>
 </tbody></table></div>
 <h2>Agents SDK</h2>
@@ -64,10 +64,18 @@
 <h2>AI Gateway</h2>
 <div class="table-wrap"><table><thead><tr><th>Fact</th><th>State</th><th>Source</th></tr></thead><tbody>
 <tr><td>AI Gateway core features (analytics, caching, rate limiting) are free on all plans.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/ai-gateway/reference/pricing/">source ↗</a></td></tr>
-<tr><td>From a Worker: <code>env.AI.run(model, input, { gateway: { id, collectLog, metadata } })</code>. The gateway is auto-created on the first authenticated request.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/ai-gateway/usage/worker-binding-methods/">source ↗</a></td></tr>
+<tr><td>From a Worker: <code>env.AI.run(model, input, { gateway: { id, collectLog, metadata } })</code>. Only the gateway named <code>default</code> is auto-created on the first authenticated request; other ids return <code>AiGatewayError 2001</code>.</td><td><span class="badge ok">✅ verified 2.1</span></td><td><a href="https://developers.cloudflare.com/ai-gateway/usage/worker-binding-methods/">source ↗</a></td></tr>
 <tr><td><code>env.AI.aiGatewayLogId</code> returns the log id of the last call, which links a span to its gateway log.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/ai-gateway/usage/worker-binding-methods/">source ↗</a></td></tr>
 <tr><td>Free plan: 10 gateways.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/ai-gateway/reference/limits/">source ↗</a></td></tr>
 </tbody></table></div>
+<h2>Verified in the 2.1 spike</h2>
+<div class="table-wrap"><table><thead><tr><th>Fact</th><th>State</th><th>Source</th></tr></thead><tbody>
+<tr><td>Workers AI responses include <code>usage.neurons</code> (for example 0.278 for 42 input + 3 output tokens on Llama 3.1 8B), so cost can use real Neurons.</td><td><span class="badge ok">✅ observed</span></td><td>local <code>/api/spike</code> call</td></tr>
+<tr><td><code>env.AI.aiGatewayLogId</code> is populated after a gateway call.</td><td><span class="badge ok">✅ observed</span></td><td>local <code>/api/spike</code> call</td></tr>
+<tr><td><code>vinext check</code> rated companies-dashboard (Next 15.5, MUI/Emotion, next/font) 100% compatible; vinext 1.3.1, Vite 8.3.5, wrangler 4.152.</td><td><span class="badge ok">✅ observed</span></td><td><code>npx vinext check</code></td></tr>
+<tr><td>Wrangler's OAuth login has no AI Gateway API scope (<code>10000 Authentication error</code> on the gateways endpoint).</td><td><span class="badge ok">✅ observed</span></td><td>Cloudflare API call</td></tr>
+</tbody></table></div>
+
 <h2>Free plan limits</h2>
 <div class="table-wrap"><table><thead><tr><th>Fact</th><th>State</th><th>Source</th></tr></thead><tbody>
 <tr><td>Workers Free: 100,000 requests/day; <b>10 ms CPU per invocation</b>; 128 MB memory; 50 external subrequests.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers/platform/limits/">source ↗</a></td></tr>

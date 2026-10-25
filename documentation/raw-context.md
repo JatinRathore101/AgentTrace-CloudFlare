@@ -92,3 +92,16 @@
   - Calibration moved before seeding, because the fixtures are calibrated runs.
 - Gap found: the public URL lets anyone exhaust the Neuron budget. Added MAX_RUNS_PER_DAY = 30 (D19, R14, TC27).
 - Status: Node 22.23.4 installed via nvm and .nvmrc added (todo 1.1 done). The Cloudflare account was in progress in the Claudia tab.
+
+## 26 Oct 2026 03:20 IST — Todo 2.1 spike (code)
+- Copied companies-dashboard (src minus sample-data, public, package*.json, tsconfig, next.config, postcss, biome) to the repo root; package name -> agenttrace; .gitignore merged.
+- `npx vinext check`: 100% compatible (next/server, next/font/google self-hosted, tailwindcss, @emotion SSR via useServerInsertedHTML).
+- `npx vinext init --platform cloudflare --name agenttrace --legacy-wrangler-cloudflare-init --skip-check --cdn-cache none --data-cache none --image-optimization none`:
+  vinext 1.3.1, vite 8.3.5, @cloudflare/vite-plugin 1.65, wrangler 4.152; scripts dev:vinext (port 3001), build:vinext, start:vinext, deploy:vinext; wrangler.jsonc main vinext/server/fetch-handler + assets block.
+- Added agents 0.30.1, worker/index.ts (routeAgentRequest ?? vinext handler, export TraceAgent), src/agent/trace-agent.ts (ping, aiPing), src/app/api/spike/route.ts; wrangler.jsonc: main ./worker/index.ts, ai remote, DO + v1 sqlite migration, observability traces, vars.
+- `wrangler types` also emitted .env key names into Env -> created empty .dev.vars so .env is not loaded into the Worker (D21). Values never appeared in the d.ts.
+- First /api/spike: `AiGatewayError: 2001: Please configure AI Gateway in the Cloudflare dashboard` (gateway id agenttrace). Dashboard AI Gateway page: "A default gateway will automatically be created on your first authenticated request". Wrangler OAuth token -> gateways API `10000 Authentication error`. Switched AI_GATEWAY_ID to default (D20).
+- Second /api/spike: ok; ping persisted (pings 3, sqliteNow 2026-10-25 21:48:49); Llama 3.1 8B "Pong", usage {prompt 42, completion 3, neurons 0.2776}, latency 6.7 s, gatewayLogId 01a17509-a7c6-76ad-b776-7daff3e4d119.
+- GET /agents/trace-agent/default (plain HTTP) -> 404: Agent has no onRequest yet; WebSocket path untested (needed only for live progress, optional).
+- `npm run build:vinext` ok; `wrangler deploy --dry-run --config dist/server/wrangler.json`: 2338.96 KiB / gzip 657.02 KiB; bindings TraceAgent, AI, ASSETS, 5 vars.
+- Docs corrected: dev port 5173 -> 3001, gateway agenttrace -> default, real vite config, runbook build/deploy commands.

@@ -39,7 +39,7 @@
 </tbody></table></div>
 <h2>2. Code</h2>
 <div class="table-wrap"><table><thead><tr><th>#</th><th>Step</th><th>Covers</th><th>Doc</th><th>Owner</th><th>Status</th></tr></thead><tbody>
-<tr><td>2.1</td><td><b>Spike + gate:</b> copy the boilerplate, <code>vinext init</code>, worker entry exporting an empty <code>TraceAgent</code>, one route calling the DO and one <code>env.AI.run</code>. Go only if dev, DO, AI and <code>deploy --dry-run</code> all work; otherwise switch to the agents-starter fallback (D3).</td><td>O6</td><td><a href='setup-3-platform-config.html'>Setup 3</a></td><td>Jatin + Claude</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>2.1</td><td><b>Spike + gate:</b> copy the boilerplate, <code>vinext init</code>, worker entry exporting an empty <code>TraceAgent</code>, one route calling the DO and one <code>env.AI.run</code>. Go only if dev, DO, AI and <code>deploy --dry-run</code> all work; otherwise switch to the agents-starter fallback (D3).</td><td>O6</td><td><a href='setup-3-platform-config.html'>Setup 3</a></td><td>Jatin + Claude</td><td><span class="badge ok">☑ done</span></td></tr>
 <tr><td>2.2</td><td>Boilerplate cleanup: remove company code and deps, rewrite logger, layout, sidebar and title</td><td>O6</td><td><a href='boilerplate-analysis.html'>Boilerplate</a></td><td>Claude</td><td><span class="badge neutral">☐</span></td></tr>
 <tr><td>2.3</td><td>Agent core: schema, scenarios, tools with faults, runner, cost, TraceAgent RPC, <code>MAX_RUNS_PER_DAY</code> guard</td><td>O1, O2</td><td><a href='agent-design.html'>Agent design</a>, <a href='data-model.html'>Data model</a></td><td>Claude</td><td><span class="badge neutral">☐</span></td></tr>
 <tr><td>2.4</td><td>APIs 1–3, runs list (UI 1), run detail timeline (UI 2)</td><td>O2, O3</td><td><a href='api-2.html'>API 2</a>, <a href='ui-1.html'>UI 1</a>, <a href='ui-2.html'>UI 2</a></td><td>Claude</td><td><span class="badge neutral">☐</span></td></tr>
@@ -59,7 +59,7 @@
 <h2>5. Out-of-code delivery</h2>
 <div class="table-wrap"><table><thead><tr><th>#</th><th>Step</th><th>Covers</th><th>Doc</th><th>Owner</th><th>Status</th></tr></thead><tbody>
 <tr><td>5.1</td><td>Set <code>MODEL_DEFAULT</code> to Llama 3.3 70B and deploy</td><td>O6</td><td><a href='deployment-runbook.html'>Runbook</a></td><td>Jatin</td><td><span class="badge neutral">☐</span></td></tr>
-<tr><td>5.2</td><td>Check AI Gateway <code>agenttrace</code> logs and Workers Observability traces in the dashboard</td><td>O6</td><td><a href='deployment-runbook.html#verification'>Runbook</a></td><td>Jatin</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>5.2</td><td>Check AI Gateway <code>default</code> logs and Workers Observability traces in the dashboard</td><td>O6</td><td><a href='deployment-runbook.html#verification'>Runbook</a></td><td>Jatin</td><td><span class="badge neutral">☐</span></td></tr>
 <tr><td>5.3</td><td>README with the live URL and the component mapping; optional demo GIF</td><td>O7</td><td><a href='setup-4-submission.html'>Setup 4</a></td><td>Jatin + Claude</td><td><span class="badge neutral">☐</span></td></tr>
 <tr><td>5.4</td><td>Final prompt record, commit, push, make the repo public</td><td>O7</td><td><a href='setup-4-submission.html'>Setup 4</a></td><td>Jatin</td><td><span class="badge neutral">☐</span></td></tr>
 </tbody></table></div>

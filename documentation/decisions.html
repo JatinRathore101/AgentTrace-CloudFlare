@@ -28,7 +28,7 @@
 
       <h1>Decisions — AgentTrace</h1>
       <p class="lead">Every question asked and decision taken, in order. Append-only.</p>
-      <dl class="meta"><div><dt>Rows</dt><dd>19</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+      <dl class="meta"><div><dt>Rows</dt><dd>22</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
 
 <h2>Decision log</h2>
 <div class="table-wrap"><table><thead><tr><th>#</th><th>Date</th><th>Question / topic</th><th>Options offered</th><th>Decision</th><th>Decided by</th><th>Reason</th></tr></thead><tbody>
@@ -51,6 +51,9 @@
 <tr><td>D17</td><td>25 Oct 2026</td><td>SQL seeding</td><td>SQL seed files · JSON fixtures auto-inserted · no seed</td><td><span class="badge ok">JSON fixtures, inserted when runs is empty and SEED_DEMO=true</span> <span class="badge neutral">SQL files</span></td><td>Claude (plan approved)</td><td>There is no external DB. Pre-recorded runs let reviewers explore without spending Neurons.</td></tr>
 <tr><td>D18</td><td>25 Oct 2026</td><td>Meaning of "training"</td><td>Fine-tune / LoRA · calibration</td><td><span class="badge ok">Calibration of prompts, tool descriptions and thresholds</span> <span class="badge neutral">fine-tuning</span></td><td>Claude (plan approved)</td><td>Llama works as-is. The real risk is faults not reproducing reliably.</td></tr>
 <tr><td>D19</td><td>25 Oct 2026</td><td>Abuse guard for the public URL</td><td>None · daily run cap</td><td><span class="badge ok">MAX_RUNS_PER_DAY = 30, 429 beyond it</span></td><td>Claude (plan approved)</td><td>Anyone with the workers.dev URL could exhaust the 10,000 Neurons/day budget.</td></tr>
+<tr><td>D20</td><td>26 Oct 2026</td><td>AI Gateway id</td><td>agenttrace (custom) · default (auto-created)</td><td><span class="badge ok">default</span></td><td>Claude (2.1 spike)</td><td>A custom id failed with AiGatewayError 2001. Only <code>default</code> is auto-created, so no dashboard step is needed.</td></tr>
+<tr><td>D21</td><td>26 Oct 2026</td><td>Keep .env out of the Worker</td><td>Rely on .env · add .dev.vars</td><td><span class="badge ok">Empty .dev.vars (git-ignored)</span></td><td>Claude (2.1 spike)</td><td>Without .dev.vars, Wrangler loads .env (account ID, OAuth tokens) into the local Worker env.</td></tr>
+<tr><td>D22</td><td>26 Oct 2026</td><td>agents() Vite plugin</td><td>Add for @callable · skip</td><td><span class="badge ok">Skip</span></td><td>Claude (2.1 spike)</td><td>TraceAgent is called through DO RPC from route handlers; no decorators are used.</td></tr>
 </tbody></table></div>
       <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
     </main>

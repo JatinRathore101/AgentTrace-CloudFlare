@@ -47,8 +47,8 @@
 <ol class='steps'><li>Route handler imports the static catalog. No DO call and no AI call.</li></ol>
 
 <h2>Sample curl</h2>
-<pre data-title="local dev"><code class="language-bash">curl -s http://localhost:5173/api/scenarios | jq</code></pre>
-<div class="callout note"><span class="ico">📌</span><div><div class="title">Base URLs</div><p>Local: <code>http://localhost:5173</code> (vinext/Vite dev default) 🟡. Production: <code>https://agenttrace.&lt;your-subdomain&gt;.workers.dev</code>. The subdomain is chosen in <a href='setup-1-account.html'>Setup 1</a> and becomes known after the first deploy. No auth: this is a single-user demo.</p></div></div>
+<pre data-title="local dev"><code class="language-bash">curl -s http://localhost:3001/api/scenarios | jq</code></pre>
+<div class="callout note"><span class="ico">📌</span><div><div class="title">Base URLs</div><p>Local: <code>http://localhost:3001</code> (<code>npm run dev:vinext</code>) ✅. Production: <code>https://agenttrace.&lt;your-subdomain&gt;.workers.dev</code>. The subdomain is chosen in <a href='setup-1-account.html'>Setup 1</a> and becomes known after the first deploy. No auth: this is a single-user demo.</p></div></div>
 
       <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
     </main>

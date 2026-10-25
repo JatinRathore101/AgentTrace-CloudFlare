@@ -53,10 +53,10 @@
 <ol class='steps'><li>Validate the body.</li><li><code>getTraceAgent()</code> → <code>stub.startRun(input)</code>.</li><li>DO inserts a <code>runs</code> row (status <code>running</code>) and calls <code>this.schedule(0, 'executeRun', { runId })</code>.</li><li>Return <code>202 { runId, status }</code>. The loop runs as in <a href='agent-design.html#agent-loop'>agent loop</a>.</li></ol>
 
 <h2>Sample curl</h2>
-<pre data-title="local dev"><code class="language-bash">curl -s -X POST http://localhost:5173/api/runs \
+<pre data-title="local dev"><code class="language-bash">curl -s -X POST http://localhost:3001/api/runs \
   -H 'content-type: application/json' \
   -d '{"scenarioId":"lisbon-weekend","faults":["loop"],"model":"@cf/meta/llama-3.1-8b-instruct-fp8-fast"}' | jq</code></pre>
-<div class="callout note"><span class="ico">📌</span><div><div class="title">Base URLs</div><p>Local: <code>http://localhost:5173</code> (vinext/Vite dev default) 🟡. Production: <code>https://agenttrace.&lt;your-subdomain&gt;.workers.dev</code>. The subdomain is chosen in <a href='setup-1-account.html'>Setup 1</a> and becomes known after the first deploy. No auth: this is a single-user demo.</p></div></div>
+<div class="callout note"><span class="ico">📌</span><div><div class="title">Base URLs</div><p>Local: <code>http://localhost:3001</code> (<code>npm run dev:vinext</code>) ✅. Production: <code>https://agenttrace.&lt;your-subdomain&gt;.workers.dev</code>. The subdomain is chosen in <a href='setup-1-account.html'>Setup 1</a> and becomes known after the first deploy. No auth: this is a single-user demo.</p></div></div>
 
       <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
     </main>

@@ -36,8 +36,8 @@
  <li><b>Problem:</b> agents can return HTTP 200 while calling the wrong tool, looping, using stale context or wasting tokens. AgentTrace makes those failures visible and explainable.</li>
  <li><b>Assignment fit:</b> Llama 3.3 on Workers AI (LLM) · Agents SDK <code>TraceAgent</code> Durable Object (coordination) · Ask-AI chat (input) · DO SQLite plus synced state (memory). <span class="badge ok">✅ confirmed</span></li>
  <li><b>Stack:</b> Next.js via vinext on one Worker, built from the <code>companies-dashboard</code> boilerplate. AI Gateway and Workers Observability are on. Everything stays on the Free plan. <span class="badge ok">✅ confirmed</span></li>
- <li><b>Biggest risk:</b> vinext is beta. Phase 1 is a 1.5 h spike with an agents-starter fallback. <span class="badge warn">🟡 open</span></li>
- <li><b>Next step:</b> finish <a href="todo.html">todo</a> section 1 (account, subdomain, <code>wrangler login</code>), then the 2.1 spike.</li>
+ <li><b>Biggest risk resolved:</b> the 2.1 spike proved vinext + Durable Object + Workers AI in one Worker. <span class="badge ok">✅ 26 Oct 2026</span></li>
+ <li><b>Next step:</b> finish <a href="todo.html">todo</a> section 1 (account, subdomain, <code>wrangler login</code>), then 2.2 boilerplate cleanup.</li>
 </ul>
 
 <h2>Docs</h2>
@@ -45,9 +45,9 @@
 
 <h2>Open questions</h2>
 <div class="table-wrap"><table><thead><tr><th>#</th><th>Question</th><th>Who can answer</th><th>Blocking?</th></tr></thead><tbody>
-<tr><td>1</td><td>Can vinext export the <code>TraceAgent</code> DO from a custom worker entry?</td><td>Todo phase 1 spike (Jatin + Claude)</td><td><span class="badge crit">yes</span></td></tr>
+<tr><td>1</td><td>Can vinext export the <code>TraceAgent</code> DO from a custom worker entry?</td><td>Todo phase 1 spike (Jatin + Claude)</td><td><span class="badge ok">resolved: works (2.1)</span></td></tr>
 <tr><td>2</td><td>Exact follow-up message format for Llama 3.3 tool calls (assistant/tool roles)</td><td>Phase 3, first live call</td><td><span class="badge neutral">no</span></td></tr>
-<tr><td>3</td><td>Names and behaviour of <code>getAgentByName</code> and <code>this.schedule(0, …)</code> in the current agents version</td><td>Phase 1 spike</td><td><span class="badge neutral">no</span></td></tr>
+<tr><td>3</td><td>Behaviour of <code>this.schedule(0, …)</code> for starting the loop (<code>getAgentByName</code> verified in 2.1)</td><td>Phase 1 spike</td><td><span class="badge neutral">no</span></td></tr>
 <tr><td>4</td><td>CPU limit for Durable Objects on Free: 10 ms or 30 s (docs unclear). The loop is I/O-bound, so this is low risk.</td><td>First deploy (watch errors)</td><td><span class="badge neutral">no</span></td></tr>
 <tr><td>5</td><td>workers.dev subdomain name</td><td>Jatin (Setup 1)</td><td><span class="badge neutral">no</span></td></tr>
 <tr><td>6</td><td>Is the GitHub repo public?</td><td>Jatin</td><td><span class="badge crit">yes, before submit</span></td></tr>

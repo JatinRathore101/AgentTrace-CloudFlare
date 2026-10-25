@@ -73,7 +73,7 @@ async function executeRun(run, ctx) {
     const t0 = Date.now();
     const res = await ctx.env.AI.run(run.model,
       { messages, tools: toolDefs(run.faults), max_tokens: 1024, temperature: 0.2 },
-      { gateway: { id: "agenttrace", metadata: { runId: run.id, step } } });
+      { gateway: { id: env.AI_GATEWAY_ID /* "default" */, metadata: { runId: run.id, step } } });
     ctx.recordSpan({ kind: "llm", name: run.model, input: messages, output: res,
       prompt_tokens: res.usage?.prompt_tokens, completion_tokens: res.usage?.completion_tokens,
       latency_ms: Date.now() - t0, gateway_log_id: ctx.env.AI.aiGatewayLogId });

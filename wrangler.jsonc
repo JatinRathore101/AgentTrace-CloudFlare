@@ -1,0 +1,33 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "agenttrace",
+  "compatibility_date": "2026-10-25",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "main": "./worker/index.ts",
+  "ai": { "binding": "AI", "remote": true },
+  "durable_objects": {
+    "bindings": [{ "name": "TraceAgent", "class_name": "TraceAgent" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["TraceAgent"] }],
+  "observability": { "enabled": true, "traces": { "enabled": true } },
+  "vars": {
+    "MODEL_DEFAULT": "@cf/meta/llama-3.1-8b-instruct-fp8-fast",
+    "AI_GATEWAY_ID": "default",
+    "MAX_STEPS": "8",
+    "MAX_RUNS_PER_DAY": "30",
+    "SEED_DEMO": "true"
+  },
+  "assets": {
+    "directory": "dist/client",
+    "html_handling": "none",
+    "not_found_handling": "none",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/*",
+      "!/_next/static/*",
+      "!/*/_next/static/*"
+    ]
+  }
+}

@@ -32,17 +32,17 @@
 
 
 <h2>Order</h2>
-<ol class='steps'><li>Preflight: <code>npx wrangler whoami</code>, <code>npm run lint</code>, <code>npx vitest run</code>, all green.</li><li>Set the demo model: <code>MODEL_DEFAULT = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"</code> in <code>wrangler.jsonc</code>.</li><li>Build and dry-run: <code>npm run build</code>, then <code>npx wrangler deploy --dry-run --outdir dist</code>. Check the bundle size in the output.</li><li>Deploy: <code>npx wrangler deploy</code> (or <code>npx @vinext/cloudflare deploy</code>). On the first deploy, Wrangler applies migration <code>v1</code> (creates the SQLite DO class) and may ask for the workers.dev subdomain.</li><li>Note the printed URL <code>https://agenttrace.&lt;subdomain&gt;.workers.dev</code> and put it in the README.</li><li>Run the verification below.</li></ol>
+<ol class='steps'><li>Preflight: <code>npx wrangler whoami</code>, <code>npm run lint</code>, <code>npx vitest run</code>, all green.</li><li>Set the demo model: <code>MODEL_DEFAULT = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"</code> in <code>wrangler.jsonc</code>.</li><li>Build and dry-run: <code>npm run build:vinext</code>, then <code>npx wrangler deploy --dry-run --config dist/server/wrangler.json</code>. Check the bundle size in the output.</li><li>Deploy: <code>npm run deploy:vinext</code>. On the first deploy, Wrangler applies migration <code>v1</code> (creates the SQLite DO class) and may ask for the workers.dev subdomain.</li><li>Note the printed URL <code>https://agenttrace.&lt;subdomain&gt;.workers.dev</code> and put it in the README.</li><li>Run the verification below.</li></ol>
 <pre data-title="terminal · deploy"><code class="language-bash">cd /Users/sanju/my-code/repos/ai-powered-application-Cloudflare
 npx wrangler whoami &amp;&amp; npm run lint &amp;&amp; npx vitest run
-npm run build
-npx wrangler deploy --dry-run --outdir dist
-npx wrangler deploy</code></pre>
+npm run build:vinext
+npx wrangler deploy --dry-run --config dist/server/wrangler.json
+npm run deploy:vinext            # vinext-cloudflare deploy --config dist/server/wrangler.json</code></pre>
 
 <h2>Config / env changes</h2>
 <div class="table-wrap"><table><thead><tr><th>Key</th><th>Env</th><th>Old</th><th>New</th></tr></thead><tbody>
 <tr><td><code>MODEL_DEFAULT</code></td><td>production</td><td><code>@cf/meta/llama-3.1-8b-instruct-fp8-fast</code></td><td><code>@cf/meta/llama-3.3-70b-instruct-fp8-fast</code></td></tr>
-<tr><td><code>AI_GATEWAY_ID</code></td><td>all</td><td>—</td><td><code>agenttrace</code></td></tr>
+<tr><td><code>AI_GATEWAY_ID</code></td><td>all</td><td>—</td><td><code>default</code></td></tr>
 <tr><td><code>MAX_STEPS</code></td><td>all</td><td>—</td><td><code>8</code></td></tr>
 <tr><td><code>MAX_RUNS_PER_DAY</code></td><td>all</td><td>—</td><td><code>30</code></td></tr>
 <tr><td><code>SEED_DEMO</code></td><td>all</td><td>—</td><td><code>true</code></td></tr>
@@ -58,7 +58,7 @@ sleep 20; curl -s $BASE/api/runs/$RUN | jq '{status: .run.status, spans: (.spans
 npx wrangler tail agenttrace --format pretty                    # live logs while clicking through the UI</code></pre>
 <ul>
  <li>Dashboard → Workers &amp; Pages → agenttrace → Observability shows traces. The Agents tab shows <code>invoke_agent</code> spans.</li>
- <li>Dashboard → AI → AI Gateway → agenttrace shows the model calls.</li>
+ <li>Dashboard → AI → AI Gateway → default shows the model calls.</li>
 </ul>
 
 <ul><li>Runs list on the live URL shows the 5 seeded demo runs before any new run is started (TC25).</li></ul>
