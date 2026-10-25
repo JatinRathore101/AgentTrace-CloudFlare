@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tech overview · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>Tech implementation overview — AgentTrace</h1>
+      <p class="lead">Architecture, the totals of what gets built, and where every piece lives.</p>
+      <dl class="meta"><div><dt>Repo</dt><dd><code>ai-powered-application-Cloudflare</code> (root)</dd></div><div><dt>Branch</dt><dd><code>main</code></dd></div><div><dt>Status</dt><dd><span class="badge info">ready for implementation</span></dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Totals</h2>
+<div class="table-wrap"><table><thead><tr><th>Area</th><th>New</th><th>Updated</th><th>Removed</th><th>Details doc</th></tr></thead><tbody>
+<tr><td>APIs</td><td>6</td><td>0</td><td>3</td><td><a href="api-1.html">api-1</a> … <a href="api-6.html">api-6</a></td></tr>
+<tr><td>Tables (DO SQLite)</td><td>4</td><td>0</td><td>1 (companies)</td><td><a href="data-model.html">data-model</a></td></tr>
+<tr><td>Durable Objects / agents</td><td>1 (TraceAgent)</td><td>0</td><td>0</td><td><a href="agent-design.html">agent-design</a></td></tr>
+<tr><td>Jobs / schedulers</td><td>1 (executeRun via <code>this.schedule(0, …)</code>)</td><td>0</td><td>0</td><td><a href="agent-design.html#agent-loop">agent loop</a></td></tr>
+<tr><td>Screens / UI flows</td><td>3</td><td>Header, layout</td><td>Companies page</td><td><a href="ui-1.html">ui-1</a> … <a href="ui-3.html">ui-3</a></td></tr>
+<tr><td>Config / bindings</td><td>AI, DO, Gateway id, observability, vars</td><td>package scripts</td><td>next.config options</td><td><a href="setup-3-platform-config.html">setup-3</a></td></tr>
+</tbody></table></div>
+
+<h2>Architecture</h2>
+<pre class="mermaid">flowchart LR
+  B[Browser · Next.js client pages] -- fetch /api/* --> R[Route handlers · vinext]
+  B -- WebSocket /agents/trace-agent/default --> W[worker/index.ts]
+  R -- RPC stub --> A[(TraceAgent DO · SQLite)]
+  W -- routeAgentRequest --> A
+  W -- else --> R
+  A -- env.AI.run + gateway --> G[AI Gateway · agenttrace]
+  G --> M[Workers AI · Llama 3.3 70B / 3.1 8B]
+  A -- spans --> O[Workers Observability traces]</pre>
+<div class="table-wrap"><table><thead><tr><th>Component</th><th>Cloudflare product</th><th>Assignment component</th></tr></thead><tbody>
+<tr><td><code>TraceAgent</code></td><td>Agents SDK on Durable Objects (SQLite)</td><td>Workflow / coordination + Memory / state</td></tr>
+<tr><td>Model calls</td><td>Workers AI · Llama 3.3 70B (demo), 3.1 8B (dev)</td><td>LLM</td></tr>
+<tr><td>Gateway</td><td>AI Gateway <code>agenttrace</code> (logs, analytics, caching)</td><td>LLM (observability)</td></tr>
+<tr><td>Ask-AI chat + New run form</td><td>Workers (vinext Next.js app)</td><td>User input via chat</td></tr>
+<tr><td>Platform traces</td><td>Workers Observability <code>traces.enabled</code></td><td>Supporting</td></tr>
+</tbody></table></div>
+
+<h2>Request flow</h2>
+<pre class="mermaid">sequenceDiagram
+  participant UI as Run page
+  participant API as POST /api/runs
+  participant DO as TraceAgent (DO)
+  participant AI as Workers AI via Gateway
+  UI->>API: scenario + faults + model
+  API->>DO: startRun(input)
+  DO-->>API: runId (status running)
+  API-->>UI: 202 { runId }
+  DO->>DO: schedule(0, "executeRun")
+  loop until final answer or maxSteps
+    DO->>AI: messages + tools
+    AI-->>DO: response, usage, tool_calls
+    DO->>DO: insert llm span, run tools, insert tool spans
+    DO-->>UI: setState(progress) over WebSocket
+  end
+  DO->>DO: detectors → findings, totals → runs row
+  UI->>API: GET /api/runs/:id
+  API->>DO: getRun(id)</pre>
+
+<h2>Repos touched</h2>
+<ul>
+  <li><b>ai-powered-application-Cloudflare</b> · branch <code>main</code> · app at the repo root (D6).</li>
+  <li><b>companies-dashboard</b>: read-only source of the copied boilerplate files.</li>
+</ul>
+<pre data-title="Target layout"><code class="language-text">/ (repo root)
+├─ worker/index.ts              Worker entry: export TraceAgent; routeAgentRequest(); else vinext handler
+├─ src/
+│  ├─ agent/
+│  │  ├─ trace-agent.ts         TraceAgent extends Agent  (DO + SQLite, RPC methods)
+│  │  ├─ schema.ts              CREATE TABLE statements, run on start
+│  │  ├─ runner.ts              agent loop: LLM call → tool calls → spans
+│  │  ├─ tools.ts               mock tools + fault injection
+│  │  ├─ scenarios.ts           scenario + fault catalog
+│  │  ├─ detectors.ts           pure functions: spans → findings
+│  │  ├─ cost.ts                tokens → Neurons → USD
+│  │  └─ explain.ts             trace serialiser + Ask-AI prompt
+│  ├─ lib/agent-client.ts       getTraceAgent(): typed DO stub for route handlers
+│  ├─ app/
+│  │  ├─ page.tsx               UI 1  runs list
+│  │  ├─ runs/[id]/page.tsx     UI 2  run detail
+│  │  ├─ compare/page.tsx       UI 3  compare
+│  │  └─ api/…/route.ts         API 1–6
+│  ├─ components/               Timeline, SpanDrawer, FindingsList, AskAiPanel, NewRunDialog, CompareView (+ kept boilerplate)
+│  └─ store/                    theme + ui slices (kept)
+├─ tests/                       vitest: detectors, cost, explain, runner (mocked AI)
+├─ wrangler.jsonc  vite.config.ts  package.json  README.md
+├─ prompt-history/  documentation/  CLAUDE.md</code></pre>
+
+<h2>Key design choices</h2>
+<ul>
+  <li>Route handlers never touch SQLite directly. They call DO RPC methods through a stub (<code>getAgentByName(env.TraceAgent, "default")</code>). <span class="badge warn">🟡 verify helper name in phase 1</span></li>
+  <li>The agent loop runs inside the DO, triggered by <code>this.schedule(0, "executeRun", { runId })</code>, so <code>POST /api/runs</code> returns at once. <span class="badge warn">🟡 verify in phase 1; fallback ctx.waitUntil</span></li>
+  <li>Live progress: <code>setState({ active })</code> → <code>useAgent</code> on the run page. Fallback: poll <code>GET /api/runs/[id]</code> every 1.5 s.</li>
+  <li>Everything Cloudflare-specific sits behind <code>src/agent/*</code>. The UI is plain Next.js and MUI.</li>
+</ul>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

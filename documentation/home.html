@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgentTrace · Cloudflare AI assignment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>AgentTrace — Cloudflare AI assignment</h1>
+      <p class="lead">End-to-end plan to build AgentTrace, an AI agent observability and debugging dashboard, as a Next.js app on Cloudflare's Free plan.</p>
+      <dl class="meta"><div><dt>Task type</dt><dd>feature (new app)</dd></div><div><dt>Status</dt><dd><span class="badge info">ready for implementation</span></dd></div><div><dt>Ticket(s)</dt><dd><a href="https://job-boards.greenhouse.io/cloudflare/jobs/8212060?gh_jid=8212060">Greenhouse 8212060</a></dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Overview</h2>
+<ul>
+ <li><b>Problem:</b> agents can return HTTP 200 while calling the wrong tool, looping, using stale context or wasting tokens. AgentTrace makes those failures visible and explainable.</li>
+ <li><b>Assignment fit:</b> Llama 3.3 on Workers AI (LLM) · Agents SDK <code>TraceAgent</code> Durable Object (coordination) · Ask-AI chat (input) · DO SQLite plus synced state (memory). <span class="badge ok">✅ confirmed</span></li>
+ <li><b>Stack:</b> Next.js via vinext on one Worker, built from the <code>companies-dashboard</code> boilerplate. AI Gateway and Workers Observability are on. Everything stays on the Free plan. <span class="badge ok">✅ confirmed</span></li>
+ <li><b>Biggest risk:</b> vinext is beta. Phase 1 is a 1.5 h spike with an agents-starter fallback. <span class="badge warn">🟡 open</span></li>
+ <li><b>Next step:</b> <a href="setup-1-account.html">Setup 1</a> → <a href="todo.html">todo</a> row 2.</li>
+</ul>
+
+<h2>Docs</h2>
+<div class="cards"><a class="card" href="requirements.html"><div class="t">📋 Requirements</div><div class="d">R1–R12, constraints, rules, out of scope.</div></a><a class="card" href="objectives.html"><div class="t">🎯 Objectives</div><div class="d">O1–O7 mapped to docs and todo.</div></a><a class="card" href="decisions.html"><div class="t">⚖️ Decisions</div><div class="d">D1–D15 with options and reasons.</div></a><a class="card" href="ticket-context.html"><div class="t">🎫 Assignment context</div><div class="d">Verbatim assignment, AgentTrace brief, job context.</div></a><a class="card" href="platform-research.html"><div class="t">☁️ Platform research</div><div class="d">Every Cloudflare fact used, with sources.</div></a><a class="card" href="boilerplate-analysis.html"><div class="t">🧱 Boilerplate</div><div class="d">Keep / rewrite / delete in companies-dashboard.</div></a><a class="card" href="impact.html"><div class="t">📈 Impact &amp; risks</div><div class="d">Free-tier Neuron budget, risk table.</div></a><a class="card" href="tech-implementation-overview.html"><div class="t">🧩 Tech overview</div><div class="d">Architecture, request flow, repo layout.</div></a><a class="card" href="agent-design.html"><div class="t">🤖 Agent design</div><div class="d">Scenarios, tools, faults, loop, detectors, Ask AI.</div></a><a class="card" href="data-model.html"><div class="t">🗄️ Data model</div><div class="d">DO SQLite tables and synced state.</div></a><a class="card" href="api-2.html"><div class="t">🔌 APIs 1–6</div><div class="d">Scenarios, runs, explain, compare, with curls.</div></a><a class="card" href="ui-2.html"><div class="t">🖥️ UIs 1–3</div><div class="d">Runs list, run detail timeline, compare.</div></a><a class="card" href="external-dependency.html"><div class="t">🔗 External deps + Setup 1–4</div><div class="d">Account, tooling, platform config, submission.</div></a><a class="card" href="todo.html"><div class="t">✅ Todo</div><div class="d">15 ordered steps, 11.5 h budget, cut list.</div></a><a class="card" href="deployment-runbook.html"><div class="t">🚀 Runbook</div><div class="d">Deploy, verify, roll back.</div></a><a class="card" href="testing-guide.html"><div class="t">🧭 Testing guide</div><div class="d">Run locally, tests, demo script.</div></a><a class="card" href="test-plan.html"><div class="t">🧪 Test plan</div><div class="d">TC1–TC24.</div></a></div>
+
+<h2>Open questions</h2>
+<div class="table-wrap"><table><thead><tr><th>#</th><th>Question</th><th>Who can answer</th><th>Blocking?</th></tr></thead><tbody>
+<tr><td>1</td><td>Can vinext export the <code>TraceAgent</code> DO from a custom worker entry?</td><td>Todo phase 1 spike (Jatin + Claude)</td><td><span class="badge crit">yes</span></td></tr>
+<tr><td>2</td><td>Exact follow-up message format for Llama 3.3 tool calls (assistant/tool roles)</td><td>Phase 3, first live call</td><td><span class="badge neutral">no</span></td></tr>
+<tr><td>3</td><td>Names and behaviour of <code>getAgentByName</code> and <code>this.schedule(0, …)</code> in the current agents version</td><td>Phase 1 spike</td><td><span class="badge neutral">no</span></td></tr>
+<tr><td>4</td><td>CPU limit for Durable Objects on Free: 10 ms or 30 s (docs unclear). The loop is I/O-bound, so this is low risk.</td><td>First deploy (watch errors)</td><td><span class="badge neutral">no</span></td></tr>
+<tr><td>5</td><td>workers.dev subdomain name</td><td>Jatin (Setup 1)</td><td><span class="badge neutral">no</span></td></tr>
+<tr><td>6</td><td>Is the GitHub repo public?</td><td>Jatin</td><td><span class="badge crit">yes, before submit</span></td></tr>
+<tr><td>7</td><td>Does the reviewer expect a specific prompt-history format?</td><td>Cloudflare (unknown); current format documented</td><td><span class="badge neutral">no</span></td></tr>
+</tbody></table></div>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

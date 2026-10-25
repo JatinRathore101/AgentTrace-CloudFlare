@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boilerplate analysis · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>Boilerplate analysis — companies-dashboard</h1>
+      <p class="lead">What to keep, rewrite and delete when moving the Next.js boilerplate onto the Workers runtime.</p>
+      <dl class="meta"><div><dt>Repo</dt><dd><code>/Users/sanju/my-code/repos/companies-dashboard</code></dd></div><div><dt>Read at</dt><dd>25 Oct 2026 15:58 IST</dd></div><div><dt>Status</dt><dd><span class="badge ok">analysed</span></dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Snapshot</h2>
+<div class="table-wrap"><table><thead><tr><th>Area</th><th>Finding</th><th>State</th></tr></thead><tbody>
+<tr><td>Framework</td><td>Next 15.5.0 App Router, React 19.1.0, TypeScript 5.9, npm, Node ≥ 22</td><td><span class="badge ok">✅ confirmed</span></td></tr>
+<tr><td>UI</td><td>MUI 6.5 + Emotion, Tailwind 4 barely used, no chart library</td><td><span class="badge ok">✅ confirmed</span></td></tr>
+<tr><td>State</td><td>RTK 2.11 + redux-persist. No RTK Query; components call <code>fetch</code> directly.</td><td><span class="badge ok">✅ confirmed</span></td></tr>
+<tr><td>DB</td><td>Raw better-sqlite3 (native, synchronous), schema inline in <code>src/setup.ts</code></td><td><span class="badge crit">blocks Workers</span></td></tr>
+<tr><td>Tests / CI</td><td>None: no Jest, Vitest, Playwright, husky or CI</td><td><span class="badge ok">✅ confirmed</span></td></tr>
+<tr><td>Size</td><td>About 35 source files, 1 page, 3 API routes</td><td><span class="badge ok">✅ confirmed</span></td></tr>
+</tbody></table></div>
+
+<h2>Keep</h2>
+<div class="table-wrap"><table><thead><tr><th>Path</th><th>What</th><th>Verdict</th><th>Change</th></tr></thead><tbody>
+<tr><td><code>src/lib/theme.ts</code></td><td>MUI <code>createAppTheme(mode)</code> with dark and light palettes</td><td><span class="badge ok">keep</span></td><td>Fix the misuse of <code>info.dark</code>, which holds a gradient string.</td></tr>
+<tr><td><code>src/components/Providers.tsx</code></td><td>Redux Provider + PersistGate + ThemeWrapper + CssBaseline</td><td><span class="badge ok">keep</span></td><td>None</td></tr>
+<tr><td><code>src/store/store.ts</code>, <code>store/storage/*</code></td><td>configureStore + redux-persist, local/session/noop storage adapters</td><td><span class="badge ok">keep</span></td><td>Reduce the reducer and whitelist to <code>theme</code> and <code>ui</code>.</td></tr>
+<tr><td><code>store/slices/themeSlice.ts</code>, <code>uiSlice.ts</code></td><td>Dark mode, sidebar open</td><td><span class="badge ok">keep</span></td><td>None</td></tr>
+<tr><td><code>src/components/Header.tsx</code></td><td>AppBar, sidebar toggle, theme toggle</td><td><span class="badge ok">keep</span></td><td>Title becomes &quot;AgentTrace&quot;.</td></tr>
+<tr><td><code>src/components/table/dataTableBody.tsx</code>, <code>staticNoData.tsx</code></td><td>Generic <code>DataTableBody&lt;T&gt;</code>: columns, skeleton rows, pagination, empty state</td><td><span class="badge ok">keep</span></td><td>Remove the hardcoded <code>fontFamily: 'Lato'</code>.</td></tr>
+<tr><td><code>src/components/chips/customChip.tsx</code></td><td>Chip</td><td><span class="badge ok">keep</span></td><td>Used for run status and finding severity.</td></tr>
+<tr><td><code>src/components/searchbar/searchbar.tsx</code></td><td>Debounced search</td><td><span class="badge ok">keep</span></td><td>Runs-list filter</td></tr>
+<tr><td><code>src/hooks/useIsMobileScreen.ts</code></td><td>Breakpoint hook</td><td><span class="badge ok">keep</span></td><td>None</td></tr>
+<tr><td><code>biome.json</code>, <code>tsconfig.json</code></td><td>Lint/format; <code>@/*</code> path alias</td><td><span class="badge ok">keep</span></td><td>Add <code>@cloudflare/workers-types</code> and the <code>agents/tsconfig</code> settings.</td></tr>
+</tbody></table></div>
+
+<h2>Rewrite</h2>
+<div class="table-wrap"><table><thead><tr><th>Path</th><th>Today</th><th>Issue</th><th>Target</th></tr></thead><tbody>
+<tr><td><code>src/lib/db.ts</code></td><td>better-sqlite3 singleton on <code>process.cwd()/companies.db</code></td><td><span class="badge crit">Node-only</span></td><td>Delete. Storage moves to <code>TraceAgent</code> DO SQLite (<a href='data-model.html'>data model</a>).</td></tr>
+<tr><td><code>src/lib/logger.ts</code></td><td>winston Console transport (Node streams)</td><td><span class="badge crit">Node-only</span></td><td>Thin <code>console</code> wrapper with the same <code>file fn() args={...}</code> format.</td></tr>
+<tr><td><code>next.config.ts</code></td><td><code>outputFileTracingRoot</code> via <code>node:path</code></td><td><span class="badge warn">🟡 irrelevant under vinext</span></td><td>Reduce to an empty config.</td></tr>
+<tr><td><code>src/components/Sidebar.tsx</code></td><td>Company filter accordions</td><td><span class="badge neutral">domain</span></td><td>Navigation: Runs, Compare, Docs link.</td></tr>
+<tr><td><code>src/components/MainContent.tsx</code></td><td>Layout + data fetching</td><td><span class="badge neutral">domain</span></td><td>A pure layout container.</td></tr>
+<tr><td><code>src/app/layout.tsx</code></td><td><code>next/font/google</code> Lato, title</td><td><span class="badge warn">🟡 vinext lacks build-time font optimisation</span></td><td>Load Inter via a <code>&lt;link&gt;</code> tag. Title &quot;AgentTrace&quot;.</td></tr>
+<tr><td><code>package.json</code> scripts</td><td><code>next dev --turbopack</code> etc.</td><td><span class="badge neutral">replace</span></td><td><code>vinext dev / build</code>, <code>wrangler deploy</code>, <code>vitest</code></td></tr>
+</tbody></table></div>
+
+<h2>Delete</h2>
+<div class="table-wrap"><table><thead><tr><th>Kind</th><th>Items</th></tr></thead><tbody>
+<tr><td>API routes</td><td><code>src/app/api/get-companies</code>, <code>get-options</code>, <code>export-companies-csv</code></td></tr>
+<tr><td>Components</td><td><code>companyTable.config.tsx</code>, <code>companiesSearchBar.tsx</code>, <code>saveViewModal.tsx</code>, <code>exportCompaniesCsvModal.tsx</code>, <code>flags/flagIcon.tsx</code>, <code>autocomplete/multiselect.tsx</code>, <code>slider/rangeSlider.tsx</code> (unless needed)</td></tr>
+<tr><td>Slices</td><td><code>companiesTableSlice.ts</code>, <code>optionsSlice.ts</code>, <code>savedFiltersSlice.ts</code></td></tr>
+<tr><td>Data / scripts</td><td><code>src/setup.ts</code>, <code>src/sample-data/</code> (about 1.7 MB), the <code>setup</code> npm script</td></tr>
+<tr><td>Constants</td><td><code>ACCORDION_SECTIONS</code>, <code>COUNTRY_NAME_MAP</code> in <code>src/constants.ts</code>. Keep <code>SIDEBAR_WIDTH</code> and <code>APPBAR_HEIGHT</code>.</td></tr>
+<tr><td>Public</td><td><code>next.svg</code>, <code>vercel.svg</code>, and the other template SVGs</td></tr>
+<tr><td>Dependencies</td><td><code>better-sqlite3</code>, <code>@types/better-sqlite3</code>, <code>winston</code>, <code>@types/winston</code>, <code>json5</code>, <code>ts-node</code></td></tr>
+</tbody></table></div>
+
+<h2>Add</h2>
+<div class="table-wrap"><table><thead><tr><th>Package</th><th>Why</th><th>Kind</th></tr></thead><tbody>
+<tr><td><code>vinext</code>, <code>vite</code>, <code>@cloudflare/vite-plugin</code></td><td>Next.js on Workers</td><td>dev</td></tr>
+<tr><td><code>wrangler</code></td><td>Local dev, deploy, types</td><td>dev</td></tr>
+<tr><td><code>agents</code></td><td>Agent class, routeAgentRequest, useAgent, the agents() Vite plugin</td><td>runtime</td></tr>
+<tr><td><code>@cloudflare/workers-types</code></td><td>Env and binding types (or <code>wrangler types</code>)</td><td>dev</td></tr>
+<tr><td><code>vitest</code></td><td>Unit tests</td><td>dev</td></tr>
+<tr><td><code>nanoid</code> (optional)</td><td>Run and span ids. <code>crypto.randomUUID()</code> is enough.</td><td>runtime</td></tr>
+</tbody></table></div>
+
+<div class="callout confirmed"><span class="ico">✅</span><div><div class="title">Workers blockers are all server-side</div><p>Client code uses no Node APIs, and localStorage/sessionStorage access is guarded by <code>typeof window</code>. The only blockers are <code>db.ts</code>, <code>logger.ts</code>, <code>setup.ts</code> and <code>next.config.ts</code>. Evidence: Explore report in <a href='raw-context.md'>raw-context.md</a>.</p></div></div>
+<div class="callout hypothesis"><span class="ico">🟡</span><div><div class="title">Copy, not fork</div><p>Copy the files into this repo root rather than keep a git link to companies-dashboard, so the submission history starts clean. Verify with <code>npx vinext check</code> right after copying.</p></div></div>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

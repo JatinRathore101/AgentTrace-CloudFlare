@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API 6 · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>API 6 — GET /api/compare?a=&b=</h1>
+      <p class="lead">Compares two runs: metric deltas, findings diff, and steps aligned by order.</p>
+      <dl class="meta"><div><dt>Repo module</dt><dd><code>src/app/api/…/route.ts</code> → <code>src/agent/trace-agent.ts</code></dd></div><div><dt>Change</dt><dd><span class="badge info">new</span></dd></div><div><dt>Auth</dt><dd>none (demo)</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Request</h2>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Notes</th></tr></thead><tbody>
+<tr><td>a</td><td>string (query)</td><td>yes</td><td>Baseline run id</td></tr>
+<tr><td>b</td><td>string (query)</td><td>yes</td><td>Candidate run id</td></tr>
+</tbody></table></div>
+<h2>Response</h2>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead><tbody>
+<tr><td>a, b</td><td>Run summary</td><td></td></tr>
+<tr><td>deltas</td><td>{ steps, prompt_tokens, completion_tokens, cost_usd, duration_ms, errors }</td><td>b − a</td></tr>
+<tr><td>findings</td><td>{ onlyA[], onlyB[], both[] }</td><td>Keyed by detector</td></tr>
+<tr><td>steps[]</td><td>{ step, a: SpanLite[], b: SpanLite[], same: boolean }</td><td>Aligned by loop step; <code>same</code> compares tool names and arguments</td></tr>
+</tbody></table></div>
+<h2>Errors</h2>
+<div class="table-wrap"><table><thead><tr><th>Code</th><th>When</th></tr></thead><tbody>
+<tr><td>400</td><td>a or b missing, or a equals b</td></tr>
+<tr><td>404</td><td>Either run not found</td></tr>
+</tbody></table></div>
+<h2>Flow</h2>
+<ol class='steps'><li><code>stub.compare(a, b)</code> loads both runs.</li><li>Pure function <code>compareRuns()</code> in <code>src/agent/compare.ts</code> (unit-tested).</li></ol>
+<div class="callout tip"><span class="ico">💡</span><div><div class="title">Demo pairing</div><p>Run S1 with <code>none</code>, then S1 with <code>loop</code>, and compare. This shows the token and cost delta caused by the loop.</p></div></div>
+<h2>Sample curl</h2>
+<pre data-title="local dev"><code class="language-bash">curl -s 'http://localhost:5173/api/compare?a=&lt;RUN_A&gt;&amp;b=&lt;RUN_B&gt;' | jq .deltas</code></pre>
+<div class="callout note"><span class="ico">📌</span><div><div class="title">Base URLs</div><p>Local: <code>http://localhost:5173</code> (vinext/Vite dev default) 🟡. Production: <code>https://agenttrace.&lt;your-subdomain&gt;.workers.dev</code>. The subdomain is chosen in <a href='setup-1-account.html'>Setup 1</a> and becomes known after the first deploy. No auth: this is a single-user demo.</p></div></div>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

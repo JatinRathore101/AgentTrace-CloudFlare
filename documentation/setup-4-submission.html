@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Setup 4 · Submission</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>Setup 4 — Submission package</h1>
+      <p class="lead">What must be in the repo, and the final step in the application form.</p>
+      <dl class="meta"><div><dt>Time</dt><dd>≈ 30 min</dd></div><div><dt>Covers</dt><dd>E8, E9, O7, R12</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Checklist</h2>
+<ul class="check">
+ <li>README at the repo root: what it is, live URL, mapping to the 4 components, how to run, test and deploy, the prompt-history pointer.</li>
+ <li><code>prompt-history/</code> complete up to the final prompt, as required by CLAUDE.md Rule 1.</li>
+ <li><code>documentation/</code> present (this site).</li>
+ <li>No secrets committed (<code>.dev.vars</code> and <code>.env*</code> are git-ignored).</li>
+ <li>Live <code>workers.dev</code> URL works (see <a href="deployment-runbook.html">runbook</a> verification).</li>
+ <li>GitHub repo <b>public</b>: Settings → General → Danger zone → Change visibility.</li>
+ <li>All commits pushed: <code>git status -sb</code> shows <code>## main...origin/main</code> with nothing ahead.</li>
+ <li>Paste <code>https://github.com/JatinRathore101/ai-powered-application-Cloudflare</code> into the form field "Optional Assignment: Please share GitHub repo URL for the project here".</li>
+</ul>
+
+<h2>README skeleton</h2>
+<pre data-title="README.md"><code class="language-markdown"># AgentTrace — AI agent observability and debugging (Cloudflare)
+
+Live demo: https://agenttrace.&lt;subdomain&gt;.workers.dev
+Built for Cloudflare's optional Software Engineer assignment (job 8212060).
+
+## Assignment components
+| Component | Implementation |
+| LLM | Llama 3.3 70B on Workers AI (via AI Gateway) |
+| Workflow / coordination | Agents SDK `TraceAgent` (Durable Object) runs the agent loop |
+| User input via chat | Ask-AI chat on each run + New-run form |
+| Memory / state | Durable Object SQLite: runs, spans, findings, chat history; live state sync |
+
+## Run locally / Deploy / Tests
+(see documentation/testing-guide.html and documentation/deployment-runbook.html)
+
+## Prompt history
+Every prompt used to build this project is in prompt-history/ (see prompt-history/README.md).</code></pre>
+
+<h2>Commit flow</h2>
+<ol class="steps">
+ <li>Jatin stages the files. Claude never runs <code>git add</code>.</li>
+ <li>Ask Claude to commit. The <code>git-commit</code> skill reviews the staged diff and writes the <code>main | commit N | type: …</code> message.</li>
+ <li><code>git push</code> (origin's push URL uses SSH).</li>
+</ol>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

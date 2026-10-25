@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API 5 · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>API 5 — POST /api/runs/[id]/explain</h1>
+      <p class="lead">Ask AI: answers a question about a run, grounded in its trace and findings, and remembers the conversation.</p>
+      <dl class="meta"><div><dt>Repo module</dt><dd><code>src/app/api/…/route.ts</code> → <code>src/agent/trace-agent.ts</code></dd></div><div><dt>Change</dt><dd><span class="badge info">new</span></dd></div><div><dt>Auth</dt><dd>none (demo)</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Request</h2>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Notes</th></tr></thead><tbody>
+<tr><td>message</td><td>string</td><td>no</td><td>Default "Why did this run fail?" Max 1,000 chars.</td></tr>
+<tr><td>model</td><td>string</td><td>no</td><td>Defaults to the run's model</td></tr>
+</tbody></table></div>
+<h2>Response</h2>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead><tbody>
+<tr><td>answer</td><td>string</td><td>Markdown bullets citing spans like [#4]</td></tr>
+<tr><td>usage</td><td>{ prompt_tokens, completion_tokens, neurons }</td><td>Stored on the message</td></tr>
+<tr><td>chat[]</td><td>ChatMessage</td><td>Updated history</td></tr>
+</tbody></table></div>
+<h2>Errors</h2>
+<div class="table-wrap"><table><thead><tr><th>Code</th><th>When</th></tr></thead><tbody>
+<tr><td>404</td><td>Run not found</td></tr>
+<tr><td>409</td><td>Run still running</td></tr>
+<tr><td>429</td><td>Workers AI daily quota reached (error message from the binding)</td></tr>
+</tbody></table></div>
+<h2>Flow</h2>
+<ol class='steps'><li><code>stub.explain(id, message)</code>.</li><li>Build the prompt from <a href='agent-design.html#ask-ai'>the template</a>: compact trace, findings, last 10 chat messages.</li><li><code>env.AI.run(model, { messages, max_tokens: 600 }, { gateway })</code>.</li><li>Insert the user and assistant rows into <code>chat_messages</code>. Return the answer.</li></ol>
+
+<h2>Sample curl</h2>
+<pre data-title="local dev"><code class="language-bash">curl -s -X POST http://localhost:5173/api/runs/&lt;RUN_ID&gt;/explain \
+  -H 'content-type: application/json' \
+  -d '{"message":"Why did this run fail?"}' | jq -r .answer</code></pre>
+<div class="callout note"><span class="ico">📌</span><div><div class="title">Base URLs</div><p>Local: <code>http://localhost:5173</code> (vinext/Vite dev default) 🟡. Production: <code>https://agenttrace.&lt;your-subdomain&gt;.workers.dev</code>. The subdomain is chosen in <a href='setup-1-account.html'>Setup 1</a> and becomes known after the first deploy. No auth: this is a single-user demo.</p></div></div>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

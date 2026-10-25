@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Setup 3 · Platform config</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>Setup 3 — Platform configuration</h1>
+      <p class="lead">The config files and bindings that connect the Next.js app to Workers AI, the TraceAgent Durable Object, AI Gateway and Observability.</p>
+      <dl class="meta"><div><dt>Time</dt><dd>part of todo phase 1</dd></div><div><dt>Covers</dt><dd>E5, E6, E7</dd></div><div><dt>Decision</dt><dd><a href='decisions.html'>D10 wrangler.jsonc</a></dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Initialise vinext</h2>
+<pre data-title="terminal"><code class="language-bash">cd /Users/sanju/my-code/repos/ai-powered-application-Cloudflare
+npx vinext check                                   # compatibility report for the copied app
+npx vinext init --legacy-wrangler-cloudflare-init  # adds vite.config.ts + scripts, keeps wrangler</code></pre>
+
+<h2>wrangler.jsonc</h2>
+<pre data-title="wrangler.jsonc"><code class="language-json">// wrangler.jsonc (repo root) — merge with what `npx vinext init --legacy-wrangler-cloudflare-init` generates
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "agenttrace",
+  "main": "./worker/index.ts",
+  "compatibility_date": "2026-10-24",
+  "compatibility_flags": ["nodejs_compat"],          // required by the agents package
+  "ai": { "binding": "AI", "remote": true },        // Workers AI, always remote
+  "durable_objects": {
+    "bindings": [{ "name": "TraceAgent", "class_name": "TraceAgent" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["TraceAgent"] }],  // SQLite-backed DO (Free plan)
+  "observability": { "enabled": true, "traces": { "enabled": true } },
+  "vars": {
+    "MODEL_DEFAULT": "@cf/meta/llama-3.1-8b-instruct-fp8-fast",   // switch to llama-3.3-70b for the demo
+    "AI_GATEWAY_ID": "agenttrace",
+    "MAX_STEPS": "8"
+  }
+}</code></pre>
+<div class="table-wrap"><table><thead><tr><th>Key</th><th>Why</th><th>State</th></tr></thead><tbody>
+<tr><td><code>nodejs_compat</code></td><td>Required by the agents package</td><td><span class="badge ok">✅ confirmed</span></td></tr>
+<tr><td><code>ai.remote: true</code></td><td>AI always runs remotely, including in local dev</td><td><span class="badge ok">✅ confirmed</span></td></tr>
+<tr><td><code>new_sqlite_classes</code></td><td>SQLite backend, the only DO backend on Free</td><td><span class="badge ok">✅ confirmed</span></td></tr>
+<tr><td><code>observability.traces</code></td><td>Platform spans plus the dashboard Agents tab</td><td><span class="badge ok">✅ confirmed</span></td></tr>
+<tr><td><code>main: ./worker/index.ts</code></td><td>Custom entry so the DO class is exported next to the app</td><td><span class="badge warn">🟡 verify in spike</span></td></tr>
+</tbody></table></div>
+
+<h2>vite.config.ts</h2>
+<pre data-title="vite.config.ts"><code class="language-typescript">// vite.config.ts — merge with the file vinext init generates
+import { defineConfig } from "vite";
+import vinext from "vinext";
+import { cloudflare } from "@cloudflare/vite-plugin";
+import agents from "agents/vite";              // TC39 decorator transform for the agents package
+
+export default defineConfig({
+  plugins: [agents(), vinext(), cloudflare()],
+});</code></pre>
+
+<h2>Worker entry</h2>
+<pre data-title="worker/index.ts"><code class="language-typescript">// worker/index.ts — single Worker: agent routes first, then the Next.js app
+import handler from "vinext/server/fetch-handler";
+import { routeAgentRequest } from "agents";
+export { TraceAgent } from "../src/agent/trace-agent";
+
+export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
+    return (await routeAgentRequest(request, env)) ?? handler.fetch(request, env, ctx);
+  },
+} satisfies ExportedHandler&lt;Env&gt;;</code></pre>
+<div class="callout hypothesis"><span class="ico">🟡</span><div><div class="title">Spike this first</div><p>The vinext docs show a custom entry wrapping <code>vinext/server/fetch-handler</code>, but not a DO export next to it. Prove it in todo phase 1. If it fails, follow the D3 fallback (agents-starter).</p></div></div>
+
+<h2>DO stub helper</h2>
+<pre data-title="src/lib/agent-client.ts"><code class="language-typescript">// src/lib/agent-client.ts — used by every route handler
+import { env } from "cloudflare:workers";
+import { getAgentByName } from "agents";
+import type { TraceAgent } from "@/agent/trace-agent";
+
+export const getTraceAgent = () =&gt; getAgentByName&lt;Env, TraceAgent&gt;(env.TraceAgent, "default");</code></pre>
+
+<h2>AI Gateway</h2>
+<ul>
+ <li>No dashboard step. The first <code>env.AI.run(..., { gateway: { id: "agenttrace" } })</code> creates it. <span class="badge ok">✅ confirmed</span></li>
+ <li>Optional: Dashboard → AI → AI Gateway → <b>agenttrace</b> → enable caching (off by default) and view logs, which are linked from spans via <code>gateway_log_id</code>.</li>
+</ul>
+
+<h2>Types</h2>
+<pre data-title="terminal"><code class="language-bash">npx wrangler types   # generates worker-configuration.d.ts with Env { AI, TraceAgent, MODEL_DEFAULT, ... }</code></pre>
+
+<h2>Secrets</h2>
+<p>None needed. Workers AI uses the binding, so there is no API key. <span class="badge ok">✅ confirmed</span></p>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

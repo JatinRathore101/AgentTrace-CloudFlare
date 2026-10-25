@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI 2 · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>UI 2 — Run detail and timeline</h1>
+      <p class="lead">The core debugging view: a summary, a waterfall of every LLM and tool span, detector findings, and the Ask-AI chat.</p>
+      <dl class="meta"><div><dt>Repo</dt><dd>ai-powered-application-Cloudflare</dd></div><div><dt>Route</dt><dd><code>/runs/[id]</code></dd></div><div><dt>Components touched</dt><dd><code>src/app/runs/[id]/page.tsx</code>, <code>components/Timeline.tsx</code>, <code>SpanDrawer.tsx</code>, <code>FindingsList.tsx</code>, <code>AskAiPanel.tsx</code>, <code>RunSummary.tsx</code></dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<pre class='mermaid'>flowchart TB
+  S[RunSummary · status · totals · cost] --> T[Timeline waterfall]
+  T --> D[SpanDrawer]
+  S --> F[FindingsList]
+  F --> T
+  S --> A[AskAiPanel]</pre>
+<h2>States</h2>
+<div class="table-wrap"><table><thead><tr><th>State</th><th>Trigger</th><th>What the user sees</th></tr></thead><tbody>
+<tr><td>Live</td><td>Run status running</td><td>Waterfall grows as spans arrive (useAgent <code>onStateUpdate</code> → refetch; fallback poll 1.5 s)</td></tr>
+<tr><td>Finished OK</td><td>status succeeded</td><td>Green status chip, final answer card, totals: steps, tokens in/out, Neurons, USD, duration</td></tr>
+<tr><td>Failed</td><td>status failed or max_steps, or crit findings</td><td>Red chip. Findings list sorted by severity. Ask-AI panel pre-filled with "Why did this run fail?"</td></tr>
+<tr><td>Span selected</td><td>Click a bar</td><td>Drawer: kind, name, status, latency, tokens, input/output JSON (pretty, collapsible), error, gateway log id</td></tr>
+<tr><td>Finding clicked</td><td>Click a finding</td><td>Scrolls to and highlights its span bar</td></tr>
+<tr><td>Asking</td><td>Send a question</td><td>Typing indicator, then the answer with [#n] span links. History persists on reload.</td></tr>
+<tr><td>Not found</td><td>Bad id</td><td>404 message with a link back to the runs list</td></tr>
+</tbody></table></div>
+<h2>APIs used</h2>
+<div class="table-wrap"><table><thead><tr><th>API</th><th>Purpose</th><th>Doc</th></tr></thead><tbody>
+<tr><td>API 3</td><td>Run, spans, findings, chat</td><td><a href='api-3.html'>api-3</a></td></tr>
+<tr><td>API 5</td><td>Ask AI</td><td><a href='api-5.html'>api-5</a></td></tr>
+<tr><td>WebSocket</td><td><code>/agents/trace-agent/default</code> progress</td><td><a href='tech-implementation-overview.html#request-flow'>request flow</a></td></tr>
+</tbody></table></div>
+<h2>Validation / edge cases</h2>
+<ul><li>Bar x = <code>(span.started_at − run.started_at) / run duration</code>, width = latency. Minimum width 2 px.</li><li>LLM bars and tool bars use different colours. Error bars are red. Bars carry a <code>#seq</code> label.</li><li>Inputs and outputs over 32 KB show a "truncated" badge.</li><li>Ask AI is disabled while the run is running.</li></ul>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

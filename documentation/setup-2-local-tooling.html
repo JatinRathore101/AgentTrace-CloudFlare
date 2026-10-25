@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Setup 2 · Local tooling</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>Setup 2 — Local tooling</h1>
+      <p class="lead">Machine prerequisites to build, run and deploy AgentTrace from the Mac.</p>
+      <dl class="meta"><div><dt>Time</dt><dd>≈ 15 min</dd></div><div><dt>Covers</dt><dd>E3, E4</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Prerequisites</h2>
+<div class="table-wrap"><table><thead><tr><th>Tool</th><th>Version</th><th>Why</th><th>Check</th></tr></thead><tbody>
+<tr><td>Node.js</td><td>≥ 22.18</td><td>vinext typed config needs 22.18+; the boilerplate declares ≥ 22</td><td><code>node -v</code></td></tr>
+<tr><td>npm</td><td>bundled</td><td>Package manager (boilerplate uses package-lock)</td><td><code>npm -v</code></td></tr>
+<tr><td>Wrangler</td><td>latest, as a dev dependency</td><td>Dev server bindings, deploy, logs</td><td><code>npx wrangler --version</code></td></tr>
+<tr><td>git + GitHub SSH</td><td>any</td><td>Push to <code>origin</code> (push URL already set to SSH)</td><td><code>ssh -T git@github.com</code></td></tr>
+<tr><td>jq (optional)</td><td>any</td><td>Pretty-print curl output in the testing guide</td><td><code>jq --version</code></td></tr>
+</tbody></table></div>
+
+<h2>Install</h2>
+<pre data-title="terminal"><code class="language-bash"># Node 22 LTS via Homebrew (skip if node -v already prints v22.18+)
+brew install node@22 &amp;&amp; brew link --overwrite node@22
+brew install jq
+
+cd /Users/sanju/my-code/repos/ai-powered-application-Cloudflare
+npm i -D wrangler@latest vinext vite @cloudflare/vite-plugin vitest @cloudflare/workers-types
+npm i agents</code></pre>
+
+<h2>Authenticate Wrangler</h2>
+<pre data-title="terminal"><code class="language-bash">npx wrangler login      # opens the browser, approve access
+npx wrangler whoami     # prints your email + Account ID</code></pre>
+<div class="callout confirmed"><span class="ico">✅</span><div><div class="title">Login is needed even for local dev</div><p>Workers AI has no local simulator. <code>wrangler dev</code> and the Vite plugin call the real service, which spends real Neurons and needs authentication.</p></div></div>
+
+<h2>Verify</h2>
+<pre data-title="terminal"><code class="language-bash">node -v                       # v22.18.0 or newer
+npx wrangler whoami           # shows the account
+git -C /Users/sanju/my-code/repos/ai-powered-application-Cloudflare remote -v   # fetch https, push git@github.com</code></pre>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

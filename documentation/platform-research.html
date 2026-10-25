@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Platform research · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>Platform research — Cloudflare facts used by AgentTrace</h1>
+      <p class="lead">Every Cloudflare fact the design depends on, with its source. Read on 25 Oct 2026.</p>
+      <dl class="meta"><div><dt>Sources</dt><dd>developers.cloudflare.com, agents.cloudflare.com, vinext GitHub</dd></div><div><dt>Read at</dt><dd>25 Oct 2026 15:55 IST</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Next.js on Workers (vinext)</h2>
+<div class="table-wrap"><table><thead><tr><th>Fact</th><th>State</th><th>Source</th></tr></thead><tbody>
+<tr><td>vinext is Cloudflare's recommended way to run Next.js on Workers. It is a Vite plugin that reimplements the Next.js API surface.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers/framework-guides/web-apps/nextjs/">source ↗</a></td></tr>
+<tr><td>vinext is <b>beta</b>. Run <code>npx vinext check</code> before adopting it.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers/framework-guides/web-apps/nextjs/">source ↗</a></td></tr>
+<tr><td>Supported: App Router, route handlers, RSC, Server Actions, SSR streaming, middleware. Bindings via <code>import { env } from &quot;cloudflare:workers&quot;</code>.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers/framework-guides/web-apps/nextjs/">source ↗</a></td></tr>
+<tr><td><code>npx vinext init</code> adds <code>dev:vinext</code>/<code>build:vinext</code> scripts and <code>vite.config.ts</code>. By default it generates a typed <code>cloudflare.config.ts</code>; <code>--legacy-wrangler-cloudflare-init</code> keeps wrangler.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://github.com/cloudflare/vinext/blob/main/README.md">source ↗</a></td></tr>
+<tr><td>A custom worker entry can wrap <code>vinext/server/fetch-handler</code>. Exporting a DO class from the same entry is not documented.</td><td><span class="badge warn">🟡 inferred</span></td><td><a href="https://github.com/cloudflare/vinext/blob/main/examples/app-router-cloudflare/worker/index.ts">source ↗</a></td></tr>
+<tr><td>Known gaps: <code>&quot;use cache&quot;</code>/PPR incomplete, build-time font/image optimisation missing.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://github.com/cloudflare/vinext/blob/main/README.md">source ↗</a></td></tr>
+</tbody></table></div>
+<h2>Agents SDK</h2>
+<div class="table-wrap"><table><thead><tr><th>Fact</th><th>State</th><th>Source</th></tr></thead><tbody>
+<tr><td>The <code>Agent</code> class is a Durable Object with <code>this.sql</code> (tagged-template SQLite), <code>this.state</code>, <code>setState()</code> broadcast, <code>schedule()</code>.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/agents/runtime/agents-api/">source ↗</a></td></tr>
+<tr><td>Clients connect with <code>useAgent({ agent, name, onStateUpdate })</code>. Endpoints follow <code>/agents/:agent/:instance</code>, routed by <code>routeAgentRequest()</code>.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/agents/communication-channels/chat/client-sdk/">source ↗</a></td></tr>
+<tr><td><code>@callable()</code> needs TC39 decorators. Under Vite 8, add the <code>agents()</code> plugin from <code>agents/vite</code>.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/agents/runtime/operations/configuration/">source ↗</a></td></tr>
+<tr><td>Wrangler needs: <code>nodejs_compat</code>; a DO binding; <code>new_sqlite_classes</code> migration.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/agents/getting-started/quick-start/">source ↗</a></td></tr>
+<tr><td>Built-in tracing: <code>observability.traces.enabled</code> gives <code>invoke_agent &gt; chat / execute_tool</code> spans with token usage in the dashboard Agents tab. 7-day retention, payloads may be truncated.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/agents/runtime/operations/observability/tracing/">source ↗</a></td></tr>
+<tr><td>Custom spans: <code>import { tracing } from &quot;cloudflare:workers&quot;</code> then <code>startSpan</code>/<code>enterSpan</code>.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers/observability/traces/custom-spans/">source ↗</a></td></tr>
+<tr><td>Agent state cap: 1 GB per instance.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/agents/platform/limits/">source ↗</a></td></tr>
+</tbody></table></div>
+<h2>Workers AI and Llama 3.3</h2>
+<div class="table-wrap"><table><thead><tr><th>Fact</th><th>State</th><th>Source</th></tr></thead><tbody>
+<tr><td>Model <code>@cf/meta/llama-3.3-70b-instruct-fp8-fast</code>: 24,000-token context, function calling, batch.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers-ai/models/llama-3.3-70b-instruct-fp8-fast/">source ↗</a></td></tr>
+<tr><td>Response: <code>{ response, usage: { prompt_tokens, completion_tokens, total_tokens }, tool_calls: [{ name, arguments }] }</code>.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers-ai/models/llama-3.3-70b-instruct-fp8-fast/">source ↗</a></td></tr>
+<tr><td><code>max_tokens</code> defaults to 256. Raise it explicitly.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers-ai/models/llama-3.3-70b-instruct-fp8-fast/">source ↗</a></td></tr>
+<tr><td>Tools are passed as <code>tools: [{ name, description, parameters }]</code>. Results go back as <code>role: &quot;tool&quot;</code> messages.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers-ai/features/function-calling/traditional/">source ↗</a></td></tr>
+<tr><td>Text-generation rate limit: 300 requests per minute.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers-ai/platform/limits/">source ↗</a></td></tr>
+<tr><td>Free: 10,000 Neurons per day, resets 00:00 UTC; calls fail with an error beyond it. Paid: $0.011 per 1,000 Neurons.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers-ai/platform/pricing/">source ↗</a></td></tr>
+<tr><td>Llama 3.3 70B: 26,668 Neurons per M input tokens, 204,805 per M output tokens. Llama 3.1 8B fp8-fast: 4,119 / 34,868.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers-ai/platform/pricing/">source ↗</a></td></tr>
+<tr><td>Workers AI has no local simulation. <code>wrangler dev</code> calls the real service, uses real Neurons, and needs login.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers/local-development/">source ↗</a></td></tr>
+</tbody></table></div>
+<h2>AI Gateway</h2>
+<div class="table-wrap"><table><thead><tr><th>Fact</th><th>State</th><th>Source</th></tr></thead><tbody>
+<tr><td>AI Gateway core features (analytics, caching, rate limiting) are free on all plans.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/ai-gateway/reference/pricing/">source ↗</a></td></tr>
+<tr><td>From a Worker: <code>env.AI.run(model, input, { gateway: { id, collectLog, metadata } })</code>. The gateway is auto-created on the first authenticated request.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/ai-gateway/usage/worker-binding-methods/">source ↗</a></td></tr>
+<tr><td><code>env.AI.aiGatewayLogId</code> returns the log id of the last call, which links a span to its gateway log.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/ai-gateway/usage/worker-binding-methods/">source ↗</a></td></tr>
+<tr><td>Free plan: 10 gateways.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/ai-gateway/reference/limits/">source ↗</a></td></tr>
+</tbody></table></div>
+<h2>Free plan limits</h2>
+<div class="table-wrap"><table><thead><tr><th>Fact</th><th>State</th><th>Source</th></tr></thead><tbody>
+<tr><td>Workers Free: 100,000 requests/day; <b>10 ms CPU per invocation</b>; 128 MB memory; 50 external subrequests.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers/platform/limits/">source ↗</a></td></tr>
+<tr><td>Worker size: the limits page now states 64 MiB uncompressed on both plans. Older pages state 3 MB Free.</td><td><span class="badge warn">🟡 conflicting docs</span></td><td><a href="https://developers.cloudflare.com/workers/platform/limits/">source ↗</a></td></tr>
+<tr><td>Durable Objects Free: SQLite backend only; 100,000 requests/day; 13,000 GB-s/day; 5M rows read and 100k rows written per day.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/durable-objects/platform/pricing/">source ↗</a></td></tr>
+<tr><td>Workflows Free: 3,000 steps/day; 10 ms CPU per step.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workflows/reference/pricing/">source ↗</a></td></tr>
+<tr><td>Workers Logs Free: 200k events/day, 3-day retention.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://developers.cloudflare.com/workers/observability/logs/workers-logs/">source ↗</a></td></tr>
+<tr><td>CPU time excludes time spent waiting on I/O (LLM calls), so a long agent run is not CPU-bound.</td><td><span class="badge ok">✅ confirmed</span></td><td><a href="https://agents.cloudflare.com/">source ↗</a></td></tr>
+</tbody></table></div>
+<div class="callout warning"><span class="ico">⚠️</span><div><div class="title">Limits that can bite</div><p>10 ms of CPU per request on Free is the main risk for Next.js server rendering (the Workers limits page says SSR typically uses 10–20 ms). It also matters for JSON-heavy route handlers. Keep pages client-rendered and payloads small. See <a href=&quot;impact.html#risks-and-mitigations&quot;>risks</a>.</p></div></div>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

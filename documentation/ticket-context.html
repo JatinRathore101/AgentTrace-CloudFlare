@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ticket context · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>Ticket context — Cloudflare assignment, job 8212060</h1>
+      <p class="lead">The assignment text, the job context, and the AgentTrace brief Jatin chose. This page replaces the earlier assignment-analysis.html.</p>
+      <dl class="meta"><div><dt>Link</dt><dd><a href="https://job-boards.greenhouse.io/cloudflare/jobs/8212060?gh_jid=8212060">Greenhouse job 8212060 ↗</a></dd></div><div><dt>Pasted at</dt><dd>25 Oct 2026 04:04 IST (assignment) · 25 Oct 2026 09:12 IST (AgentTrace brief)</dd></div><div><dt>State</dt><dd>Optional assignment, no deadline stated</dd></div></dl>
+
+
+<h2>Summary</h2>
+<ul>
+  <li>The Cloudflare <b>Software Engineer</b> role (Bengaluru, hybrid, 3–15 yrs) has an <b>optional assignment</b>. Completing it fast-tracks the candidate. <span class="badge ok">✅ confirmed</span></li>
+  <li>The assignment: build an AI-powered application on Cloudflare with four components: LLM, workflow/coordination, chat or voice input, memory/state. <span class="badge ok">✅ confirmed</span></li>
+  <li>Deliverable: a GitHub repo URL in the form field. AI-assisted coding is encouraged, but the prompt history must be submitted. <span class="badge ok">✅ confirmed</span></li>
+  <li>The assignment's two links point to <a href="https://agents.cloudflare.com/">agents.cloudflare.com</a> and the <a href="https://developers.cloudflare.com/agents/">Agents docs</a>. <span class="badge ok">✅ confirmed</span></li>
+  <li>Jatin chose to build <b>AgentTrace</b>: an observability and debugging dashboard for AI agents. <span class="badge ok">✅ confirmed</span></li>
+  <li>No deadline, rubric, language requirement or deployment requirement is stated. <span class="badge ok">✅ verified absent</span></li>
+</ul>
+
+<h2>Assignment (verbatim)</h2>
+<blockquote>
+<p><b>Optional Assignment: Please share GitHub repo URL for the project here</b></p>
+<p>We plan to fast track candidates who complete an assignment to build a type of <a href="https://agents.cloudflare.com/">AI-powered application</a> on Cloudflare. An AI-powered application should include the following components:</p>
+<ul>
+<li>LLM (recommend using Llama 3.3 on Workers AI), or an external LLM of your choice</li>
+<li>Workflow / coordination (recommend using Workflows, Workers or Durable Objects)</li>
+<li>User input via chat or voice (recommend using Pages or Realtime)</li>
+<li>Memory or state</li>
+</ul>
+<p>Find additional documentation <a href="https://developers.cloudflare.com/agents/">here</a>.</p>
+<p><i>Note: AI-assisted coding is encouraged, but you have to submit prompt history.</i></p>
+</blockquote>
+
+<h2>AgentTrace brief (verbatim, pasted by Jatin)</h2>
+<pre data-title="AgentTrace brief"><code class="language-text">AgentTrace — AI agent observability and debugging
+Best overall
+Problem statement: AI agents can return a successful HTTP response while making the wrong tool call, looping repeatedly, using stale context, or wasting tokens. Build a debugging dashboard that helps developers understand why an agent behaved incorrectly.
+
+Cloudflare has explicitly discussed this problem in its work on agent observability and tracing.
+Cloudflare Blog
+
+One-day MVP:
+- Run a sample agent through several tool calls.
+- Record each model call, tool input/output, latency and error.
+- Display an execution timeline and token/cost estimates.
+- Let users ask an AI assistant why a run failed.
+- Save traces and compare two runs.
+Cloudflare relevance: Agents, AI Gateway, Workers Observability.
+
+Difficulty: medium · Estimated: 8–12 hours</code></pre>
+
+<h2>Thread / comment abstract</h2>
+<div class="table-wrap"><table><thead><tr><th>#</th><th>Date</th><th>Author</th><th>Point made</th></tr></thead><tbody>
+<tr><td>1</td><td>25 Oct 2026 04:04 IST</td><td>Jatin</td><td>Work on the optional assignment. Gather context from the linked pages and invent no facts.</td></tr>
+<tr><td>2</td><td>25 Oct 2026 09:12 IST</td><td>Jatin</td><td>Plans to build AgentTrace. Asked about feasibility, Next.js, and free hosting.</td></tr>
+<tr><td>3</td><td>25 Oct 2026 15:50 IST</td><td>Jatin</td><td>Use as many Cloudflare suggestions as possible, Next.js fullstack, the companies-dashboard boilerplate, and a full generate-docs set.</td></tr>
+</tbody></table></div>
+
+<h2>Required, recommended, unspecified</h2>
+<div class="table-wrap"><table><thead><tr><th>Item</th><th>Status</th><th>Basis</th></tr></thead><tbody>
+<tr><td>All four components present</td><td><span class="badge ok">required</span></td><td>&quot;should include the following components&quot;</td></tr>
+<tr><td>GitHub repo URL as the deliverable</td><td><span class="badge ok">required</span></td><td>Form field label</td></tr>
+<tr><td>Prompt history submitted</td><td><span class="badge ok">required</span></td><td>&quot;you have to submit prompt history&quot;. No format given.</td></tr>
+<tr><td>Specific Cloudflare products</td><td><span class="badge info">recommended</span></td><td>Every product is prefixed with &quot;recommend&quot;. An external LLM is explicitly allowed.</td></tr>
+<tr><td>Runs on Cloudflare's platform</td><td><span class="badge warn">🟡 inferred</span></td><td>&quot;build ... on Cloudflare&quot;. Both links point to the Agents platform.</td></tr>
+<tr><td>Agent-like behaviour, not a single prompt-response call</td><td><span class="badge warn">🟡 inferred</span></td><td>Both linked pages define agents as systems that plan, act and keep state.</td></tr>
+<tr><td>Public deployment, deadline, language, rubric</td><td><span class="badge neutral">unspecified</span></td><td>Not mentioned anywhere.</td></tr>
+</tbody></table></div>
+
+<h2>Job context</h2>
+<ul>
+  <li>The team builds "internal platforms and software tools that power our infrastructure operations". <span class="badge ok">✅ confirmed</span></li>
+  <li>Valued: "AI-native curiosity", modular design, code reviews, automated testing, CI/CD, observability frameworks. <span class="badge ok">✅ confirmed</span></li>
+  <li>AgentTrace fits the observability emphasis. <span class="badge warn">🟡 inferred fit</span></li>
+</ul>
+
+<h2>Facts vs claims</h2>
+<ul>
+  <li>✅ The assignment text and both links were read on 25 Oct 2026 via the Claude in Chrome extension and curl.</li>
+  <li>✅ The Llama 3.3 model id, pricing and free allowance were verified against the docs (<a href="platform-research.html">platform research</a>).</li>
+  <li>🟡 "Cloudflare has explicitly discussed this problem" is a claim from the brief. Related posts were found: <a href="https://blog.cloudflare.com/agents-on-cloudflare/">Introducing: Cloudflare Agents</a> and <a href="https://blog.cloudflare.com/cloudflare-tracing/">Cloudflare Traces</a>.</li>
+  <li>🟡 How reviewers evaluate the submission is unknown.</li>
+</ul>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

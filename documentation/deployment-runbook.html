@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deployment runbook · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>Deployment runbook — AgentTrace</h1>
+      <p class="lead">Deploy the single Worker to workers.dev, verify it, and roll back if needed.</p>
+      <dl class="meta"><div><dt>Target</dt><dd>Cloudflare Workers (Free)</dd></div><div><dt>Worker</dt><dd><code>agenttrace</code></dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Order</h2>
+<ol class='steps'><li>Preflight: <code>npx wrangler whoami</code>, <code>npm run lint</code>, <code>npx vitest run</code>, all green.</li><li>Set the demo model: <code>MODEL_DEFAULT = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"</code> in <code>wrangler.jsonc</code>.</li><li>Build and dry-run: <code>npm run build</code>, then <code>npx wrangler deploy --dry-run --outdir dist</code>. Check the bundle size in the output.</li><li>Deploy: <code>npx wrangler deploy</code> (or <code>npx @vinext/cloudflare deploy</code>). On the first deploy, Wrangler applies migration <code>v1</code> (creates the SQLite DO class) and may ask for the workers.dev subdomain.</li><li>Note the printed URL <code>https://agenttrace.&lt;subdomain&gt;.workers.dev</code> and put it in the README.</li><li>Run the verification below.</li></ol>
+<pre data-title="terminal · deploy"><code class="language-bash">cd /Users/sanju/my-code/repos/ai-powered-application-Cloudflare
+npx wrangler whoami &amp;&amp; npm run lint &amp;&amp; npx vitest run
+npm run build
+npx wrangler deploy --dry-run --outdir dist
+npx wrangler deploy</code></pre>
+
+<h2>Config / env changes</h2>
+<div class="table-wrap"><table><thead><tr><th>Key</th><th>Env</th><th>Old</th><th>New</th></tr></thead><tbody>
+<tr><td><code>MODEL_DEFAULT</code></td><td>production</td><td><code>@cf/meta/llama-3.1-8b-instruct-fp8-fast</code></td><td><code>@cf/meta/llama-3.3-70b-instruct-fp8-fast</code></td></tr>
+<tr><td><code>AI_GATEWAY_ID</code></td><td>all</td><td>—</td><td><code>agenttrace</code></td></tr>
+<tr><td><code>MAX_STEPS</code></td><td>all</td><td>—</td><td><code>8</code></td></tr>
+<tr><td><code>observability.traces.enabled</code></td><td>all</td><td>—</td><td><code>true</code></td></tr>
+</tbody></table></div>
+
+<h2>Verification</h2>
+<pre data-title="terminal · smoke test"><code class="language-bash">BASE=https://agenttrace.&lt;subdomain&gt;.workers.dev
+curl -s $BASE/api/scenarios | jq '.scenarios | length'          # 3
+RUN=$(curl -s -X POST $BASE/api/runs -H 'content-type: application/json' \
+  -d '{"scenarioId":"tokyo-weather"}' | jq -r .runId)
+sleep 20; curl -s $BASE/api/runs/$RUN | jq '{status: .run.status, spans: (.spans|length)}'
+npx wrangler tail agenttrace --format pretty                    # live logs while clicking through the UI</code></pre>
+<ul>
+ <li>Dashboard → Workers &amp; Pages → agenttrace → Observability shows traces. The Agents tab shows <code>invoke_agent</code> spans.</li>
+ <li>Dashboard → AI → AI Gateway → agenttrace shows the model calls.</li>
+</ul>
+
+<h2>Rollback</h2>
+<pre data-title="terminal · rollback"><code class="language-bash">npx wrangler deployments list
+npx wrangler rollback            # previous version; DO storage is kept</code></pre>
+<div class="callout warning"><span class="ico">⚠️</span><div><div class="title">Migrations are forward-only</div><p>Rollback does not undo the <code>v1</code> DO migration. Code-only rollbacks are safe because the schema is created with <code>IF NOT EXISTS</code>.</p></div></div>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

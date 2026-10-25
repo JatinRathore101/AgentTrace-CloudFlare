@@ -29,4 +29,5 @@ prompt-history/
 - Record the prompt before acting on it, as the first step of handling every user message. Do not batch or defer this.
 - Timestamps come from the tool's own record of when the message was sent, not from when the file is written.
 - Prompts that only steer the session (for example "check remote") are still prompts and are still recorded.
+- Exception: prompts that ask only for git operations (commit, push, stage, remote, branch, status) are **not** recorded. A prompt that mixes git work with any other change is recorded.
 - Never edit or delete an existing `prompt.md`. If a correction is needed, add a new prompt that explains it.

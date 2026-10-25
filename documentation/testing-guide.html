@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testing guide · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>Testing guide — run, test and demo AgentTrace</h1>
+      <p class="lead">How to run the app locally, run the automated tests, walk the demo script, and protect the free Neuron budget.</p>
+      <dl class="meta"><div><dt>Audience</dt><dd>Jatin, reviewers</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Run locally</h2>
+<pre data-title="terminal"><code class="language-bash">cd /Users/sanju/my-code/repos/ai-powered-application-Cloudflare
+npm install
+npx wrangler login        # once; local AI calls hit the real service
+npm run dev               # vinext dev server, open http://localhost:5173</code></pre>
+<div class="callout warning"><span class="ico">⚠️</span><div><div class="title">Local runs spend real Neurons</div><p>Keep <code>MODEL_DEFAULT</code> on Llama 3.1 8B while developing. Each 3.3 70B run costs about 6× more. Durable Object data is local only, stored in <code>.wrangler/state/</code>.</p></div></div>
+
+<h2>Automated tests</h2>
+<pre data-title="terminal"><code class="language-bash">npx vitest run              # all unit tests
+npx vitest run detectors    # one file
+npm run lint                # biome check</code></pre>
+<div class="table-wrap"><table><thead><tr><th>Test file</th><th>What it proves</th><th>AI calls</th></tr></thead><tbody>
+<tr><td><code>tests/detectors.test.ts</code></td><td>Each detector fires on a crafted span list and stays silent on the happy path</td><td>none</td></tr>
+<tr><td><code>tests/cost.test.ts</code></td><td>Neuron and USD math matches the published rates</td><td>none</td></tr>
+<tr><td><code>tests/explain.test.ts</code></td><td>Serialiser truncates fields, keeps order, stays under the size budget</td><td>none</td></tr>
+<tr><td><code>tests/compare.test.ts</code></td><td>Deltas, findings diff, step alignment</td><td>none</td></tr>
+<tr><td><code>tests/runner.test.ts</code></td><td>Loop with a mocked <code>env.AI.run</code>: tool calls, errors, maxSteps, span recording</td><td>mocked</td></tr>
+</tbody></table></div>
+
+<h2>Demo script</h2>
+<ol class='steps'><li>Open the runs list. Click <b>New run</b> → S1 <code>lisbon-weekend</code>, no faults → Start. Watch the timeline fill in.</li><li>Open the finished run. Show the summary, the timeline, a tool span in the drawer, and the cost.</li><li>New run → S1 with the <code>loop</code> fault. It ends as <code>max_steps</code> with <code>loop</code> + <code>max_steps</code> findings.</li><li>On the failed run, open Ask AI → "Why did this run fail?" The answer cites the repeated <code>searchFlights</code> spans.</li><li>Ask a follow-up ("How do I fix the tool?"). The history persists after a reload, which shows memory/state.</li><li>Tick both S1 runs → Compare. Show the token and cost delta and the diverging steps.</li><li>Optional: <code>tool_error</code> and <code>stale_context</code> runs to show the other detectors.</li></ol>
+
+<h2>Where to look when something breaks</h2>
+<ul>
+ <li>Terminal running <code>npm run dev</code>: route and DO logs.</li>
+ <li>Production: <code>npx wrangler tail agenttrace</code>, Dashboard Observability, AI Gateway logs.</li>
+ <li>A 429 or quota error from Workers AI means the daily 10,000 Neurons are spent. It resets at 00:00 UTC (05:30 IST).</li>
+</ul>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

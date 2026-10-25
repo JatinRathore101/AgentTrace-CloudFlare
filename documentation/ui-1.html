@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI 1 · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>UI 1 — Runs list</h1>
+      <p class="lead">Landing page: every saved run, its status and cost, a New-run button, and two-row selection for compare.</p>
+      <dl class="meta"><div><dt>Repo</dt><dd>ai-powered-application-Cloudflare</dd></div><div><dt>Route</dt><dd><code>/</code></dd></div><div><dt>Components touched</dt><dd><code>src/app/page.tsx</code>, <code>components/RunsTable.tsx</code>, <code>components/NewRunDialog.tsx</code>; reuses <code>DataTableBody</code>, <code>customChip</code>, <code>searchbar</code></dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+
+<h2>States</h2>
+<div class="table-wrap"><table><thead><tr><th>State</th><th>Trigger</th><th>What the user sees</th></tr></thead><tbody>
+<tr><td>Loading</td><td>First fetch</td><td>Skeleton rows (DataTableBody)</td></tr>
+<tr><td>Empty</td><td>No runs yet</td><td>Empty state with a "Start your first run" button</td></tr>
+<tr><td>List</td><td>Runs loaded</td><td>Columns: status chip, scenario, faults chips, model, steps, tokens, cost (USD), findings count, started</td></tr>
+<tr><td>Running</td><td>A run has status running</td><td>Spinner chip. The row refreshes via polling every 1.5 s.</td></tr>
+<tr><td>New run</td><td>Click "New run"</td><td>Dialog: scenario select, fault checkboxes, model select (3.1 8B default in dev), optional goal text</td></tr>
+<tr><td>Compare ready</td><td>Exactly 2 rows ticked</td><td>"Compare" button enabled → <code>/compare?a=&amp;b=</code></td></tr>
+<tr><td>Error</td><td>API failure or 429</td><td>Snackbar with the message, for example "Daily AI quota reached, resets 00:00 UTC"</td></tr>
+</tbody></table></div>
+<h2>APIs used</h2>
+<div class="table-wrap"><table><thead><tr><th>API</th><th>Purpose</th><th>Doc</th></tr></thead><tbody>
+<tr><td>API 1</td><td>Dialog options</td><td><a href='api-1.html'>api-1</a></td></tr>
+<tr><td>API 2</td><td>Start run</td><td><a href='api-2.html'>api-2</a></td></tr>
+<tr><td>API 3</td><td>List</td><td><a href='api-3.html'>api-3</a></td></tr>
+<tr><td>API 4</td><td>Delete (row menu)</td><td><a href='api-4.html'>api-4</a></td></tr>
+</tbody></table></div>
+<h2>Validation / edge cases</h2>
+<ul><li>Disable "Start" while a run is running (API 2 returns 429).</li><li>Goal text: max 500 chars, trimmed.</li><li>Compare needs 2 different runs, both finished.</li></ul>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

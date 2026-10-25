@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>External dependencies · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>External dependencies — AgentTrace</h1>
+      <p class="lead">Everything outside the code that must happen. Each setup area has its own step-by-step page.</p>
+      <dl class="meta"><div><dt>Items</dt><dd>10</dd></div><div><dt>Blocking</dt><dd><span class="badge crit">6</span></dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Dependencies</h2>
+<div class="table-wrap"><table><thead><tr><th>#</th><th>Dependency</th><th>Owner / team</th><th>Needed before</th><th>Status</th><th>Blocking?</th><th>Notes</th></tr></thead><tbody>
+<tr><td>E1</td><td>Cloudflare account (Free plan), email verified</td><td>Jatin</td><td>Phase 1</td><td><span class="badge neutral">☐ pending</span></td><td><span class="badge crit">yes</span></td><td><a href='setup-1-account.html'>Setup 1</a></td></tr>
+<tr><td>E2</td><td>workers.dev subdomain chosen</td><td>Jatin</td><td>First deploy</td><td><span class="badge neutral">☐ pending</span></td><td><span class="badge crit">yes</span></td><td>Asked on first <code>wrangler deploy</code>, or set in the dashboard</td></tr>
+<tr><td>E3</td><td>Node 22.18+ and npm on the Mac</td><td>Jatin</td><td>Phase 1</td><td><span class="badge neutral">☐ verify</span></td><td><span class="badge crit">yes</span></td><td><a href='setup-2-local-tooling.html'>Setup 2</a></td></tr>
+<tr><td>E4</td><td>Wrangler authenticated (<code>wrangler login</code>)</td><td>Jatin</td><td>Phase 1 (local AI calls need it)</td><td><span class="badge neutral">☐ pending</span></td><td><span class="badge crit">yes</span></td><td><a href='setup-2-local-tooling.html#authenticate-wrangler'>Setup 2</a></td></tr>
+<tr><td>E5</td><td>Workers AI available on the account</td><td>Cloudflare (default)</td><td>Phase 3</td><td><span class="badge ok">☑ no action</span></td><td>no</td><td>Included in Free and Paid plans</td></tr>
+<tr><td>E6</td><td>AI Gateway <code>agenttrace</code></td><td>Auto-created</td><td>Phase 3</td><td><span class="badge ok">☑ no action</span></td><td>no</td><td>Created on the first authenticated request with <code>gateway.id</code>. A manual path exists in the dashboard.</td></tr>
+<tr><td>E7</td><td>Workers Observability traces</td><td>Config</td><td>Phase 9</td><td><span class="badge neutral">☐ config</span></td><td>no</td><td><code>observability.traces.enabled</code> in wrangler.jsonc</td></tr>
+<tr><td>E8</td><td>GitHub repo public, with remote push access over SSH</td><td>Jatin</td><td>Phase 9</td><td><span class="badge warn">🟡 visibility unknown</span></td><td><span class="badge crit">yes</span></td><td>Push via SSH already works. Check visibility in GitHub settings.</td></tr>
+<tr><td>E9</td><td>Submit the repo URL in the Greenhouse form</td><td>Jatin</td><td>End</td><td><span class="badge neutral">☐ pending</span></td><td><span class="badge crit">yes</span></td><td><a href='setup-4-submission.html'>Setup 4</a></td></tr>
+<tr><td>E10</td><td>Neuron budget monitoring</td><td>Jatin</td><td>Ongoing</td><td><span class="badge neutral">☐</span></td><td>no</td><td>Dashboard → AI → Workers AI usage</td></tr>
+</tbody></table></div>
+<div class="cards">
+ <a class="card" href="setup-1-account.html"><div class="t">☁️ Setup 1 — Account</div><div class="d">Cloudflare account, Free plan, workers.dev subdomain.</div></a>
+ <a class="card" href="setup-2-local-tooling.html"><div class="t">🧰 Setup 2 — Local tooling</div><div class="d">Node, npm, Wrangler login, checks.</div></a>
+ <a class="card" href="setup-3-platform-config.html"><div class="t">⚙️ Setup 3 — Platform config</div><div class="d">wrangler.jsonc, Vite, worker entry, bindings, Gateway, Observability.</div></a>
+ <a class="card" href="setup-4-submission.html"><div class="t">📮 Setup 4 — Submission</div><div class="d">README, prompt history, public repo, application form.</div></a>
+</div>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

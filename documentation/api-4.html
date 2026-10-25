@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API 4 · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>API 4 — DELETE /api/runs/[id]</h1>
+      <p class="lead">Deletes a run and its spans, findings and chat. Keeps storage tidy.</p>
+      <dl class="meta"><div><dt>Repo module</dt><dd><code>src/app/api/…/route.ts</code> → <code>src/agent/trace-agent.ts</code></dd></div><div><dt>Change</dt><dd><span class="badge info">new · stretch</span></dd></div><div><dt>Auth</dt><dd>none (demo)</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Request</h2>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Notes</th></tr></thead><tbody>
+<tr><td>id</td><td>string (path)</td><td>yes</td><td>Run id</td></tr>
+</tbody></table></div>
+<h2>Response</h2>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead><tbody>
+<tr><td>deleted</td><td>boolean</td><td></td></tr>
+</tbody></table></div>
+<h2>Errors</h2>
+<div class="table-wrap"><table><thead><tr><th>Code</th><th>When</th></tr></thead><tbody>
+<tr><td>404</td><td>Run id not found</td></tr>
+<tr><td>409</td><td>Run is still running</td></tr>
+</tbody></table></div>
+<h2>Flow</h2>
+<ol class='steps'><li><code>stub.deleteRun(id)</code>: delete from the 4 tables in one <code>transactionSync</code>.</li></ol>
+
+<h2>Sample curl</h2>
+<pre data-title="local dev"><code class="language-bash">curl -s -X DELETE http://localhost:5173/api/runs/&lt;RUN_ID&gt; | jq</code></pre>
+<div class="callout note"><span class="ico">📌</span><div><div class="title">Base URLs</div><p>Local: <code>http://localhost:5173</code> (vinext/Vite dev default) 🟡. Production: <code>https://agenttrace.&lt;your-subdomain&gt;.workers.dev</code>. The subdomain is chosen in <a href='setup-1-account.html'>Setup 1</a> and becomes known after the first deploy. No auth: this is a single-user demo.</p></div></div>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

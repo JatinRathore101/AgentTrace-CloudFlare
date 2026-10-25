@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Todo · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>Todo — AgentTrace</h1>
+      <p class="lead">The ordered checklist from setup to submission. Tick the rows in order.</p>
+      <dl class="meta"><div><dt>Rows</dt><dd>18</dd></div><div><dt>Budget</dt><dd>8–12 h</dd></div><div><dt>Status</dt><dd><span class="badge info">ready for implementation</span></dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Steps</h2>
+<div class="table-wrap"><table><thead><tr><th>#</th><th>Step</th><th>Type</th><th>Covers</th><th>Doc</th><th>Owner</th><th>Status</th></tr></thead><tbody>
+<tr><td>1</td><td>Setup 1 + Setup 2: account, Node, wrangler login</td><td>manual</td><td>O6</td><td><a href='setup-1-account.html'>S1</a>, <a href='setup-2-local-tooling.html'>S2</a></td><td>Jatin</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>2</td><td>Phase 1 spike (1.5 h): copy boilerplate to repo root, <code>vinext check/init</code>, worker entry exporting an empty <code>TraceAgent</code>, one route calling <code>stub.ping()</code> and one <code>env.AI.run</code></td><td>code</td><td>O6</td><td><a href='setup-3-platform-config.html'>S3</a></td><td>Jatin + Claude</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>3</td><td>Spike gate: <code>npm run dev</code> works, the DO answers, the AI call returns, <code>wrangler deploy --dry-run</code> passes. If not, switch to the D3 fallback.</td><td>verify</td><td>O6</td><td><a href='impact.html#risks-and-mitigations'>risks</a></td><td>Jatin</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>4</td><td>Phase 2 cleanup (1 h): delete company code and deps, rewrite logger, layout, sidebar, title</td><td>code</td><td>O6</td><td><a href='boilerplate-analysis.html'>boilerplate</a></td><td>Claude</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>5</td><td>Phase 3 agent core (2 h): <code>schema.ts</code>, <code>scenarios.ts</code>, <code>tools.ts</code> with faults, <code>runner.ts</code>, <code>cost.ts</code>, TraceAgent RPC <code>startRun/executeRun/getRun/listRuns</code></td><td>code</td><td>O1, O2</td><td><a href='agent-design.html'>agent design</a>, <a href='data-model.html'>data model</a></td><td>Claude</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>6</td><td>Phase 4 APIs (1 h): API 1, 2, 3 (and 4 if time allows)</td><td>code</td><td>O2</td><td><a href='api-1.html'>api-1</a> … <a href='api-4.html'>api-4</a></td><td>Claude</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>7</td><td>Phase 5 UI (2 h): runs list + New-run dialog, run detail waterfall + span drawer + summary</td><td>code</td><td>O3</td><td><a href='ui-1.html'>ui-1</a>, <a href='ui-2.html'>ui-2</a></td><td>Claude</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>8</td><td>Phase 6 diagnosis (1.5 h): <code>detectors.ts</code>, findings on finish, <code>explain.ts</code>, API 5, AskAiPanel</td><td>code</td><td>O4</td><td><a href='agent-design.html#detectors'>detectors</a>, <a href='api-5.html'>api-5</a></td><td>Claude</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>9</td><td>Phase 7 compare (1 h): <code>compare.ts</code>, API 6, UI 3</td><td>code</td><td>O5</td><td><a href='api-6.html'>api-6</a>, <a href='ui-3.html'>ui-3</a></td><td>Claude</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>10</td><td>Phase 8 tests (1 h): Vitest for detectors, cost, explain, compare, runner (mocked AI)</td><td>code</td><td>O1–O5</td><td><a href='test-plan.html'>test plan</a></td><td>Claude</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>11</td><td>Manual test pass: TC1–TC22 locally on Llama 3.1 8B</td><td>verify</td><td>O1–O5</td><td><a href='testing-guide.html'>testing guide</a></td><td>Jatin</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>12</td><td>Set <code>MODEL_DEFAULT</code> to Llama 3.3 70B, deploy</td><td>deploy</td><td>O6</td><td><a href='deployment-runbook.html'>runbook</a></td><td>Jatin</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>13</td><td>Production smoke test: TC23–TC24</td><td>verify</td><td>O6</td><td><a href='test-plan.html'>test plan</a></td><td>Jatin</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>14</td><td>Phase 9 (0.5 h): README, final prompt record, repo public, commit and push</td><td>manual</td><td>O7</td><td><a href='setup-4-submission.html'>S4</a></td><td>Jatin</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>15</td><td>Submit the repo URL in the Greenhouse form</td><td>manual</td><td>O7</td><td><a href='setup-4-submission.html'>S4</a></td><td>Jatin</td><td><span class="badge neutral">☐</span></td></tr>
+<tr><td>S1</td><td>Stretch: live progress via <code>useAgent</code> instead of polling</td><td>code</td><td>O3</td><td><a href='ui-2.html'>ui-2</a></td><td>Claude</td><td><span class="badge neutral">optional</span></td></tr>
+<tr><td>S2</td><td>Stretch: move the agent loop into Workflows (<code>step.do</code> per step)</td><td>code</td><td>O1</td><td><a href='impact.html#risks-and-mitigations'>risks</a></td><td>Claude</td><td><span class="badge neutral">optional</span></td></tr>
+<tr><td>S3</td><td>Stretch: ingest endpoint so external agents can send spans</td><td>code</td><td>—</td><td><a href='requirements.html#out-of-scope'>out of scope</a></td><td>Claude</td><td><span class="badge neutral">optional</span></td></tr>
+</tbody></table></div>
+
+<h2>Time budget</h2>
+<div class="table-wrap"><table><thead><tr><th>Phase</th><th>Hours</th></tr></thead><tbody>
+<tr><td>1 Spike</td><td class="num">1.5</td></tr>
+<tr><td>2 Cleanup</td><td class="num">1</td></tr>
+<tr><td>3 Agent core</td><td class="num">2</td></tr>
+<tr><td>4 APIs</td><td class="num">1</td></tr>
+<tr><td>5 UI</td><td class="num">2</td></tr>
+<tr><td>6 Detectors + Ask AI</td><td class="num">1.5</td></tr>
+<tr><td>7 Compare</td><td class="num">1</td></tr>
+<tr><td>8 Tests</td><td class="num">1</td></tr>
+<tr><td>9 Deploy + submit</td><td class="num">0.5</td></tr>
+<tr><td><b>Total</b></td><td class="num"><b>11.5</b></td></tr>
+</tbody></table></div>
+<div class="callout tip"><span class="ico">💡</span><div><div class="title">Cut list if time runs out</div><p>Drop in this order: API 4 delete, stretch rows, Compare UI polish, then the aligned-steps part of Compare. Never drop: the agent loop, spans, timeline, Ask AI. Those carry the four assignment components.</p></div></div>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

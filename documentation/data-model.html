@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data model · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>Data model — TraceAgent SQLite</h1>
+      <p class="lead">The tables the TraceAgent Durable Object creates in its own SQLite storage, plus the synced agent state.</p>
+      <dl class="meta"><div><dt>Storage</dt><dd>Durable Object SQLite (<code>this.sql</code>)</dd></div><div><dt>Instance</dt><dd><code>TraceAgent</code> / <code>default</code></dd></div><div><dt>Migration</dt><dd><span class="badge neutral">none — created in code (D13)</span></dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Entities</h2>
+<pre class="mermaid">erDiagram
+  runs ||--o{ spans : has
+  runs ||--o{ findings : has
+  runs ||--o{ chat_messages : has
+  spans ||--o{ findings : "points to (span_seq)&quot;</pre>
+<div class="table-wrap"><table><thead><tr><th>Table</th><th>Purpose</th><th>Written by</th><th>Read by</th></tr></thead><tbody>
+<tr><td><code>runs</code></td><td>One row per agent run, with totals</td><td>startRun, finish</td><td>API 2, 3, 6</td></tr>
+<tr><td><code>spans</code></td><td>One row per LLM or tool step</td><td>recordSpan</td><td>API 3, 5, 6, detectors</td></tr>
+<tr><td><code>findings</code></td><td>Detector output</td><td>finish → detectors</td><td>API 3, 5, 6</td></tr>
+<tr><td><code>chat_messages</code></td><td>Ask-AI conversation per run (memory)</td><td>explain</td><td>API 3, 5</td></tr>
+</tbody></table></div>
+
+<h2>Schema</h2>
+<pre data-title="schema.ts · DO SQLite DDL"><code class="language-sql">-- src/agent/schema.ts — executed in TraceAgent.onStart() with this.sql; idempotent
+CREATE TABLE IF NOT EXISTS runs (
+  id TEXT PRIMARY KEY,               -- crypto.randomUUID()
+  scenario TEXT NOT NULL,            -- 'lisbon-weekend' | 'tokyo-weather' | 'budget-check'
+  goal TEXT NOT NULL,
+  faults TEXT NOT NULL DEFAULT '[]', -- JSON array of fault flags
+  model TEXT NOT NULL,
+  status TEXT NOT NULL,              -- running | succeeded | failed | max_steps
+  final_answer TEXT,
+  error TEXT,
+  steps INTEGER NOT NULL DEFAULT 0,
+  prompt_tokens INTEGER NOT NULL DEFAULT 0,
+  completion_tokens INTEGER NOT NULL DEFAULT 0,
+  neurons REAL NOT NULL DEFAULT 0,
+  cost_usd REAL NOT NULL DEFAULT 0,
+  started_at INTEGER NOT NULL,       -- epoch ms
+  ended_at INTEGER
+);
+CREATE TABLE IF NOT EXISTS spans (
+  id TEXT PRIMARY KEY,
+  run_id TEXT NOT NULL REFERENCES runs(id),
+  seq INTEGER NOT NULL,              -- 1..n in execution order
+  step INTEGER NOT NULL,             -- agent loop iteration
+  kind TEXT NOT NULL,                -- llm | tool
+  name TEXT NOT NULL,                -- model id or tool name
+  status TEXT NOT NULL,              -- ok | error
+  input TEXT,                        -- JSON, truncated to 32 KB
+  output TEXT,                       -- JSON, truncated to 32 KB
+  error TEXT,
+  prompt_tokens INTEGER,
+  completion_tokens INTEGER,
+  started_at INTEGER NOT NULL,
+  ended_at INTEGER NOT NULL,
+  latency_ms INTEGER NOT NULL,
+  gateway_log_id TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_spans_run ON spans(run_id, seq);
+CREATE TABLE IF NOT EXISTS findings (
+  id TEXT PRIMARY KEY,
+  run_id TEXT NOT NULL REFERENCES runs(id),
+  detector TEXT NOT NULL,
+  severity TEXT NOT NULL,            -- info | warn | crit
+  span_seq INTEGER,
+  message TEXT NOT NULL,
+  evidence TEXT                      -- JSON
+);
+CREATE INDEX IF NOT EXISTS idx_findings_run ON findings(run_id);
+CREATE TABLE IF NOT EXISTS chat_messages (
+  id TEXT PRIMARY KEY,
+  run_id TEXT NOT NULL REFERENCES runs(id),
+  role TEXT NOT NULL,                -- user | assistant
+  content TEXT NOT NULL,
+  prompt_tokens INTEGER,
+  completion_tokens INTEGER,
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_chat_run ON chat_messages(run_id, created_at);</code></pre>
+<div class="callout note"><span class="ico">📌</span><div><div class="title">No external migrations</div><p><code>CREATE ... IF NOT EXISTS</code> runs on every DO start, so it is idempotent. A future column change is done with <code>ALTER TABLE</code> guarded by a <code>PRAGMA table_info</code> check. Free plan limits: 2 MB per row, 100 bound parameters per query.</p></div></div>
+
+<h2>Synced state</h2>
+<pre data-title="TraceAgentState"><code class="language-typescript">// Agent state (setState → every connected client via WebSocket)
+type TraceAgentState = {
+  active: { runId: string; step: number; status: "running" | "done" } | null;
+  updatedAt: number;
+};</code></pre>
+
+<h2>Retention</h2>
+<ul>
+  <li>Kept until deleted. There is no TTL in the MVP. <span class="badge warn">🟡 add a 'delete run' API if storage grows</span></li>
+  <li>Cloudflare's own platform traces have 7-day retention and may truncate payloads. That is why AgentTrace keeps its own copy. <span class="badge ok">✅ confirmed</span></li>
+</ul>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

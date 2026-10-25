@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decisions · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>Decisions — AgentTrace</h1>
+      <p class="lead">Every question asked and decision taken, in order. Append-only.</p>
+      <dl class="meta"><div><dt>Rows</dt><dd>15</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+<h2>Decision log</h2>
+<div class="table-wrap"><table><thead><tr><th>#</th><th>Date</th><th>Question / topic</th><th>Options offered</th><th>Decision</th><th>Decided by</th><th>Reason</th></tr></thead><tbody>
+<tr><td>D1</td><td>24 Oct 2026</td><td>Which assignment idea to build</td><td>Several ideas weighed in chat</td><td><span class="badge ok">AgentTrace — agent observability and debugging</span></td><td>Jatin</td><td>Rated best overall. It directly matches Cloudflare's own agent-tracing work.</td></tr>
+<tr><td>D2</td><td>25 Oct 2026</td><td>Vibecode in 8–12 h? Next.js? Free hosting?</td><td>Q&amp;A in chat</td><td><span class="badge ok">Feasible with tight scope; Next.js possible via vinext; Free plan suffices</span></td><td>Claude, Jatin accepted</td><td>Based on Workers AI pricing (10,000 Neurons per day free), the vinext guide, and the free limits.</td></tr>
+<tr><td>D3</td><td>25 Oct 2026</td><td>Frontend / fullstack stack</td><td>Next.js via vinext · agents-starter (Vite + React)</td><td><span class="badge ok">Next.js via vinext</span> <span class="badge neutral">agents-starter as fallback</span></td><td>Jatin</td><td>Jatin's choice. vinext is Cloudflare's recommended Next.js path.</td></tr>
+<tr><td>D4</td><td>25 Oct 2026</td><td>Boilerplate</td><td>Start fresh · reuse companies-dashboard</td><td><span class="badge ok">companies-dashboard</span></td><td>Jatin</td><td>It already has Next.js, TypeScript, Redux, an MUI theme and a table component.</td></tr>
+<tr><td>D5</td><td>25 Oct 2026</td><td>Docs folder location</td><td>documentation/agenttrace/ · documentation/ root · outside repo</td><td><span class="badge ok">documentation/ root</span></td><td>Jatin (AskUserQuestion)</td><td>One docs site at the repo root.</td></tr>
+<tr><td>D6</td><td>25 Oct 2026</td><td>App code location</td><td>Repo root · app/ subfolder</td><td><span class="badge ok">Repo root</span></td><td>Jatin (AskUserQuestion)</td><td>Simplest layout for reviewers.</td></tr>
+<tr><td>D7</td><td>25 Oct 2026</td><td>Vendor naming (Rule 2)</td><td>Describe without URLs · URLs only in raw-context.md</td><td><span class="badge ok">Drop Rule 2 completely</span> <span class="badge neutral">both options offered</span></td><td>Jatin (AskUserQuestion, custom answer)</td><td>Docs need source URLs. Prompt records were restored to verbatim.</td></tr>
+<tr><td>D8</td><td>25 Oct 2026</td><td>Trace storage</td><td>Durable Object SQLite · D1</td><td><span class="badge ok">DO SQLite, single named instance</span> <span class="badge neutral">D1</span></td><td>Claude (plan approved)</td><td>Native to the Agents SDK; no extra resource; satisfies the memory/state requirement; free.</td></tr>
+<tr><td>D9</td><td>25 Oct 2026</td><td>Agent loop implementation</td><td>Hand-rolled · Think harness · AIChatAgent</td><td><span class="badge ok">Hand-rolled loop</span> <span class="badge neutral">Think / AIChatAgent</span></td><td>Claude (plan approved)</td><td>Full control over span capture and fault injection, with fewer beta dependencies.</td></tr>
+<tr><td>D10</td><td>25 Oct 2026</td><td>Config format</td><td>wrangler.jsonc (legacy) · cloudflare.config.ts (typed, beta)</td><td><span class="badge ok">wrangler.jsonc</span> <span class="badge neutral">typed config</span></td><td>Claude</td><td>Agents SDK docs document the DO, AI and observability keys in wrangler format. Options for <code>bindings.ai()</code> are unconfirmed.</td></tr>
+<tr><td>D11</td><td>25 Oct 2026</td><td>Timeline rendering</td><td>Chart library · custom MUI bars</td><td><span class="badge ok">Custom MUI bars</span></td><td>Claude (plan approved)</td><td>The boilerplate has no chart library, and a waterfall is simple absolutely-positioned bars.</td></tr>
+<tr><td>D12</td><td>25 Oct 2026</td><td>Model during development</td><td>Always Llama 3.3 · switchable</td><td><span class="badge ok">Llama 3.1 8B in dev, Llama 3.3 70B for the demo</span></td><td>Claude (plan approved)</td><td>3.1 8B costs about 6× fewer Neurons per token, which protects the 10,000 per day free budget.</td></tr>
+<tr><td>D13</td><td>25 Oct 2026</td><td>SQL / liquibase files</td><td>Skill default · in-code schema</td><td><span class="badge ok">No .sql or liquibase files</span></td><td>Claude (plan approved)</td><td>There is no external DB. The DO creates its tables on start. Logged as an exception to the skill.</td></tr>
+<tr><td>D14</td><td>25 Oct 2026</td><td>assignment-analysis.html</td><td>Keep standalone · fold into docs set</td><td><span class="badge ok">Folded into ticket-context.html</span></td><td>Claude (plan approved)</td><td>check-docs.py rejects pages without the shared skeleton or with inline style.</td></tr>
+<tr><td>D15</td><td>25 Oct 2026</td><td>Artifacts</td><td>Publish · local only</td><td><span class="badge ok">Local docs only</span></td><td>Jatin</td><td>&quot;No need to maintain artifacts, we will rely on our local docs.&quot;</td></tr>
+</tbody></table></div>
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

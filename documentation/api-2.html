@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API 2 · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>API 2 — POST /api/runs</h1>
+      <p class="lead">Starts a new traced agent run and returns at once. The loop continues inside the TraceAgent DO.</p>
+      <dl class="meta"><div><dt>Repo module</dt><dd><code>src/app/api/…/route.ts</code> → <code>src/agent/trace-agent.ts</code></dd></div><div><dt>Change</dt><dd><span class="badge info">new</span></dd></div><div><dt>Auth</dt><dd>none (demo)</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Request</h2>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Notes</th></tr></thead><tbody>
+<tr><td>scenarioId</td><td>string</td><td>yes</td><td><code>lisbon-weekend</code> | <code>tokyo-weather</code> | <code>budget-check</code></td></tr>
+<tr><td>faults</td><td>string[]</td><td>no</td><td>Default <code>[]</code>. Any of <code>wrong_tool, loop, stale_context, tool_error, token_waste</code>.</td></tr>
+<tr><td>model</td><td>string</td><td>no</td><td>Default from the <code>MODEL_DEFAULT</code> var</td></tr>
+<tr><td>goal</td><td>string</td><td>no</td><td>Overrides the scenario goal (chat-style input), max 500 chars</td></tr>
+</tbody></table></div>
+<h2>Response</h2>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead><tbody>
+<tr><td>runId</td><td>string (uuid)</td><td>Use with API 3</td></tr>
+<tr><td>status</td><td>"running"</td><td>Progress over WebSocket or polling</td></tr>
+</tbody></table></div>
+<h2>Errors</h2>
+<div class="table-wrap"><table><thead><tr><th>Code</th><th>When</th></tr></thead><tbody>
+<tr><td>400</td><td>Unknown scenario, fault or model; goal too long</td></tr>
+<tr><td>429</td><td>Another run is still running (one at a time on the single DO)</td></tr>
+<tr><td>500</td><td>DO unreachable</td></tr>
+</tbody></table></div>
+<h2>Flow</h2>
+<ol class='steps'><li>Validate the body.</li><li><code>getTraceAgent()</code> → <code>stub.startRun(input)</code>.</li><li>DO inserts a <code>runs</code> row (status <code>running</code>) and calls <code>this.schedule(0, 'executeRun', { runId })</code>.</li><li>Return <code>202 { runId, status }</code>. The loop runs as in <a href='agent-design.html#agent-loop'>agent loop</a>.</li></ol>
+
+<h2>Sample curl</h2>
+<pre data-title="local dev"><code class="language-bash">curl -s -X POST http://localhost:5173/api/runs \
+  -H 'content-type: application/json' \
+  -d '{"scenarioId":"lisbon-weekend","faults":["loop"],"model":"@cf/meta/llama-3.1-8b-instruct-fp8-fast"}' | jq</code></pre>
+<div class="callout note"><span class="ico">📌</span><div><div class="title">Base URLs</div><p>Local: <code>http://localhost:5173</code> (vinext/Vite dev default) 🟡. Production: <code>https://agenttrace.&lt;your-subdomain&gt;.workers.dev</code>. The subdomain is chosen in <a href='setup-1-account.html'>Setup 1</a> and becomes known after the first deploy. No auth: this is a single-user demo.</p></div></div>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

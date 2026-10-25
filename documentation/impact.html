@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Impact · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>Impact — AgentTrace</h1>
+      <p class="lead">What the build creates, what it costs on the Free plan, and what can go wrong.</p>
+      <dl class="meta"><div><dt>Plan</dt><dd><span class="badge ok">Workers Free</span></dd></div><div><dt>Money impact</dt><dd><span class="badge ok">$0</span></dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Users / accounts</h2>
+<ul>
+  <li>Single-user demo. No auth. Anyone with the <code>workers.dev</code> URL can start runs and use the shared Neuron budget. <span class="badge warn">🟡 acceptable for a demo</span></li>
+  <li>One Cloudflare account (Jatin's) on the Free plan.</li>
+</ul>
+
+<h2>Data</h2>
+<ul>
+  <li>One Durable Object instance, <code>default</code>, holds all runs. At about 30 spans per run and ≤ 32 KB per span payload, 1,000 runs stay far under the 1 GB agent cap. <span class="badge warn">🟡 estimate</span></li>
+  <li>No personal data. Tool data is mock data.</li>
+</ul>
+
+<h2>Free-tier budget</h2>
+<div class="table-wrap"><table><thead><tr><th>Workload</th><th>Assumption</th><th>Neurons each</th><th>Max per day (10,000 Neurons)</th></tr></thead><tbody>
+<tr><td>Agent run, Llama 3.3 70B</td><td>≈ 5 LLM calls, ≈ 7,500 input + 1,000 output tokens</td><td class="num">≈ 405</td><td class="num">≈ 24</td></tr>
+<tr><td>Agent run, Llama 3.1 8B (dev)</td><td>same token profile</td><td class="num">≈ 66</td><td class="num">≈ 150</td></tr>
+<tr><td>Ask-AI answer, Llama 3.3 70B</td><td>≈ 5,000 input + 400 output tokens</td><td class="num">≈ 215</td><td class="num">≈ 46</td></tr>
+<tr><td>Ask-AI answer, Llama 3.1 8B</td><td>same</td><td class="num">≈ 35</td><td class="num">≈ 285</td></tr>
+</tbody></table></div>
+<div class="callout hypothesis"><span class="ico">🟡</span><div><div class="title">Estimates, verify after phase 3</div><p>Neurons = input tokens × rate_in / 1M + output tokens × rate_out / 1M. Rates come from the <a href='platform-research.html#workers-ai-and-llama-3-3'>pricing page</a>. Replace the assumed token counts with real ones from the first recorded runs.</p></div></div>
+
+<h2>Systems</h2>
+<ul>
+  <li>A new Worker, <code>agenttrace</code>, with the AI binding, the <code>TraceAgent</code> DO, AI Gateway <code>agenttrace</code>, and Workers Observability traces.</li>
+  <li>No downtime concerns. There is nothing to migrate.</li>
+</ul>
+
+<h2>Risks and mitigations</h2>
+<div class="table-wrap"><table><thead><tr><th>Risk</th><th>Likelihood</th><th>Mitigation</th></tr></thead><tbody>
+<tr><td>vinext beta cannot export the <code>TraceAgent</code> DO from the custom worker entry, or breaks on MUI/Emotion SSR</td><td><span class="badge warn">🟡 medium</span></td><td>Phase-1 spike, time-boxed to 1.5 h. Fallback: the <code>agents-starter</code> template (Vite + React SPA) with the same components (D3).</td></tr>
+<tr><td>The 10 ms CPU limit per request on Free is exceeded by SSR</td><td><span class="badge warn">🟡 medium</span></td><td>Pages are <code>&quot;use client&quot;</code> shells. Route handlers only proxy to the DO. Payloads are capped (span I/O truncated to 32 KB).</td></tr>
+<tr><td>The 10,000 Neurons/day budget is exhausted during development</td><td><span class="badge ok">✅ likely</span></td><td>Develop on Llama 3.1 8B via the <code>MODEL_DEV</code> var. Mock the AI binding in tests. Show a clear 'daily AI quota reached' error.</td></tr>
+<tr><td>Llama ignores tools or returns malformed <code>tool_calls</code></td><td><span class="badge warn">🟡 medium</span></td><td>Validate the arguments with a small schema, record a <code>tool_error</code> span, cap the loop at <code>maxSteps = 8</code>. That is itself a failure AgentTrace shows.</td></tr>
+<tr><td>Faults do not reproduce deterministically (model non-determinism)</td><td><span class="badge warn">🟡 medium</span></td><td>Faults are injected in tool code, not only in prompts. Detectors read spans, not model intent. Use <code>seed</code> where supported.</td></tr>
+<tr><td><code>@callable</code> decorators fail under Vite 8</td><td><span class="badge ok">✅ documented</span></td><td>Add the <code>agents()</code> plugin from <code>agents/vite</code>, or avoid decorators by calling DO RPC methods from route handlers (the chosen design).</td></tr>
+<tr><td>Worker bundle exceeds the size limit</td><td><span class="badge warn">🟡 low</span></td><td><code>wrangler deploy --dry-run --outdir dist</code> and check the size. Current limits page states 64 MiB.</td></tr>
+<tr><td>Reviewers expect Workflows usage</td><td><span class="badge warn">🟡 low</span></td><td>Optional stretch: move the agent loop into a Workflow with one <code>step.do</code> per step (todo stretch row).</td></tr>
+</tbody></table></div>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

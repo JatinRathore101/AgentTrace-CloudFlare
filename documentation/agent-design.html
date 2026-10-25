@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent design · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>Agent design — sample agent, faults, detectors, Ask AI</h1>
+      <p class="lead">How the traced sample agent works, how failures are injected and detected, and how the AI explains a run.</p>
+      <dl class="meta"><div><dt>Owner</dt><dd>Jatin</dd></div><div><dt>Status</dt><dd><span class="badge info">ready for implementation</span></dd></div><div><dt>Covers</dt><dd>O1, O3, O4</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Scenarios</h2>
+<div class="table-wrap"><table><thead><tr><th>Scenario</th><th>User goal</th><th>Expected tools</th></tr></thead><tbody>
+<tr><td>S1 <code>lisbon-weekend</code></td><td>Plan a 2-day trip to Lisbon next weekend: check the weather, find a flight from Bengaluru, and give the total budget in my home currency.</td><td>getUserProfile, getWeather, searchFlights, convertCurrency</td></tr>
+<tr><td>S2 <code>tokyo-weather</code></td><td>What will the weather be in Tokyo tomorrow?</td><td>getWeather</td></tr>
+<tr><td>S3 <code>budget-check</code></td><td>Convert a 1,200 USD flight into my home currency.</td><td>getUserProfile, convertCurrency</td></tr>
+</tbody></table></div>
+
+<h2>Tools</h2>
+<div class="table-wrap"><table><thead><tr><th>Tool</th><th>Arguments</th><th>Normal output</th><th>Fault behaviour</th></tr></thead><tbody>
+<tr><td><code>getUserProfile</code></td><td><code>{}</code></td><td><code>{ name, homeCity: &quot;Bengaluru&quot;, currency: &quot;INR&quot;, as_of }</code></td><td>stale_context: returns <code>as_of: 2024-01-01</code> and <code>currency: &quot;USD&quot;</code></td></tr>
+<tr><td><code>getWeather</code></td><td><code>{ city, date }</code></td><td><code>{ city, date, summary, high_c, low_c, as_of }</code></td><td>wrong_tool: description swapped to &quot;Returns flight prices&quot;. token_waste: adds 10 KB of hourly readings.</td></tr>
+<tr><td><code>searchFlights</code></td><td><code>{ from, to, date }</code></td><td><code>{ options: [{ airline, price_usd, depart, arrive }] }</code></td><td>loop: always returns <code>{ status: &quot;pending&quot;, hint: &quot;call searchFlights again&quot; }</code></td></tr>
+<tr><td><code>convertCurrency</code></td><td><code>{ amount, from, to }</code></td><td><code>{ amount, rate, as_of }</code></td><td>tool_error: throws <code>Upstream FX service 503</code></td></tr>
+</tbody></table></div>
+<div class="callout note"><span class="ico">📌</span><div><div class="title">Mocks are deterministic</div><p>Tools return fixed data keyed by arguments, so the only non-determinism is the model. Fault flags change tool behaviour in code, which makes failures reproducible.</p></div></div>
+
+<h2>Fault injection</h2>
+<div class="table-wrap"><table><thead><tr><th>Fault flag</th><th>What it does</th><th>Detector that should fire</th></tr></thead><tbody>
+<tr><td><code>none</code></td><td>Happy path</td><td>No findings</td></tr>
+<tr><td><code>wrong_tool</code></td><td>Misleading tool description</td><td><code>unexpected_tool</code> / <code>missing_tool</code></td></tr>
+<tr><td><code>loop</code></td><td>Tool keeps saying &quot;call again&quot;</td><td><code>loop</code> + <code>max_steps</code></td></tr>
+<tr><td><code>stale_context</code></td><td>Profile data is old</td><td><code>stale_context</code></td></tr>
+<tr><td><code>tool_error</code></td><td>Tool throws</td><td><code>tool_error</code></td></tr>
+<tr><td><code>token_waste</code></td><td>Huge tool output</td><td><code>token_waste</code></td></tr>
+</tbody></table></div>
+
+<h2>Agent loop</h2>
+<ol class="steps">
+  <li>Build messages: a system prompt (role, tool policy, &quot;answer when done&quot;) plus the scenario goal.</li>
+  <li>Call <code>env.AI.run(model, { messages, tools, max_tokens: 1024 }, { gateway })</code>. Record an <b>llm</b> span with usage, latency and the gateway log id.</li>
+  <li>No <code>tool_calls</code>: finish as <code>succeeded</code> with <code>response</code> as the final answer.</li>
+  <li>Otherwise run each tool call. Record a <b>tool</b> span (status ok/error) and append a <code>role: &quot;tool&quot;</code> message.</li>
+  <li><code>setState</code> progress, then repeat. After <code>maxSteps = 8</code>, finish as <code>max_steps</code>.</li>
+  <li>On finish: run detectors, write findings, total the tokens and cost on the <code>runs</code> row.</li>
+</ol>
+<pre data-title="runner.ts · loop shape"><code class="language-typescript">// src/agent/runner.ts — shape of the loop (pseudo-TypeScript)
+async function executeRun(run, ctx) {
+  const messages = [system(scenario), user(scenario.goal)];
+  for (let step = 1; step &lt;= MAX_STEPS; step++) {
+    const t0 = Date.now();
+    const res = await ctx.env.AI.run(run.model,
+      { messages, tools: toolDefs(run.faults), max_tokens: 1024, temperature: 0.2 },
+      { gateway: { id: "agenttrace", metadata: { runId: run.id, step } } });
+    ctx.recordSpan({ kind: "llm", name: run.model, input: messages, output: res,
+      prompt_tokens: res.usage?.prompt_tokens, completion_tokens: res.usage?.completion_tokens,
+      latency_ms: Date.now() - t0, gateway_log_id: ctx.env.AI.aiGatewayLogId });
+    if (!res.tool_calls?.length) return ctx.finish(run, "succeeded", res.response);
+    messages.push({ role: "assistant", content: JSON.stringify(res.tool_calls) });
+    for (const call of res.tool_calls) {
+      const t1 = Date.now();
+      try {
+        const out = await runTool(call.name, call.arguments, run.faults);
+        ctx.recordSpan({ kind: "tool", name: call.name, input: call.arguments, output: out, latency_ms: Date.now() - t1 });
+        messages.push({ role: "tool", name: call.name, content: JSON.stringify(out) });
+      } catch (e) {
+        ctx.recordSpan({ kind: "tool", name: call.name, input: call.arguments, status: "error", error: String(e), latency_ms: Date.now() - t1 });
+        messages.push({ role: "tool", name: call.name, content: JSON.stringify({ error: String(e) }) });
+      }
+    }
+    ctx.setProgress(run.id, step);
+  }
+  return ctx.finish(run, "max_steps", null);
+}</code></pre>
+<div class="callout hypothesis"><span class="ico">🟡</span><div><div class="title">Tool-call message format</div><p>Llama 3.3 tool calling via <code>tools</code> + <code>tool_calls</code> is documented. The exact shape of the follow-up <code>assistant</code>/<code>tool</code> messages is shown in the traditional function-calling guide for another model. Confirm against Llama 3.3 in phase 3 and adjust.</p></div></div>
+
+<h2>Detectors</h2>
+<div class="table-wrap"><table><thead><tr><th>Detector</th><th>Rule</th><th>Severity</th></tr></thead><tbody>
+<tr><td><code>loop</code></td><td>Same tool + identical arguments ≥ 3 times in a run</td><td><span class="badge crit">crit</span></td></tr>
+<tr><td><code>tool_error</code></td><td>Any span with <code>status = 'error'</code></td><td><span class="badge crit">crit</span></td></tr>
+<tr><td><code>max_steps</code></td><td>Run ended because <code>steps = maxSteps</code> (8)</td><td><span class="badge crit">crit</span></td></tr>
+<tr><td><code>empty_answer</code></td><td>Final answer empty or under 20 characters</td><td><span class="badge crit">crit</span></td></tr>
+<tr><td><code>unexpected_tool</code></td><td>Tool called that is not in <code>scenario.expectedTools</code></td><td><span class="badge warn">warn</span></td></tr>
+<tr><td><code>missing_tool</code></td><td>Expected tool never called in a run that ended</td><td><span class="badge warn">warn</span></td></tr>
+<tr><td><code>stale_context</code></td><td>A tool output's <code>as_of</code> is older than 24 h relative to run start</td><td><span class="badge warn">warn</span></td></tr>
+<tr><td><code>token_waste</code></td><td>Tool output over 4,000 chars, or prompt tokens on a step over 3× step 1</td><td><span class="badge warn">warn</span></td></tr>
+<tr><td><code>slow_step</code></td><td>Span latency over 5,000 ms</td><td><span class="badge info">info</span></td></tr>
+</tbody></table></div>
+<p>Detectors are pure functions <code>(run, spans, scenario) → Finding[]</code> in <code>src/agent/detectors.ts</code>, unit-tested without the model.</p>
+
+<h2>Cost estimate</h2>
+<pre data-title="cost.ts"><code class="language-typescript">// src/agent/cost.ts
+export const RATES = {                     // Neurons per 1M tokens (Workers AI pricing page, 25 Oct 2026)
+  "@cf/meta/llama-3.3-70b-instruct-fp8-fast": { in: 26668, out: 204805 },
+  "@cf/meta/llama-3.1-8b-instruct-fp8-fast":  { in: 4119,  out: 34868 },
+} as const;
+export const USD_PER_1K_NEURONS = 0.011;
+export const FREE_NEURONS_PER_DAY = 10_000;
+
+export function estimate(model: keyof typeof RATES, promptTokens: number, completionTokens: number) {
+  const r = RATES[model];
+  const neurons = (promptTokens * r.in + completionTokens * r.out) / 1_000_000;
+  return { neurons, usd: (neurons / 1000) * USD_PER_1K_NEURONS };
+}</code></pre>
+
+<h2>Ask AI</h2>
+<ul>
+  <li>Input: the compact trace from <code>explain.ts</code> plus findings plus the last 10 chat messages (memory). Kept under about 6,000 tokens to stay well inside the 24k context.</li>
+  <li>Model: the same model switch as runs. The answer is stored in <code>chat_messages</code> with its token usage.</li>
+  <li>Default question when the panel opens on a failed run: &quot;Why did this run fail?&quot;</li>
+</ul>
+<pre data-title="Ask-AI prompt template"><code class="language-text">SYSTEM:
+You are AgentTrace's debugging assistant. You explain why an AI agent run behaved as it did.
+Use ONLY the trace and findings below. Cite span numbers like [#4]. If the trace does not show
+the cause, say so. Answer in at most 8 short bullet points, then one line "Fix:" with the change
+to make (prompt, tool, or code).
+
+TRACE (JSON, truncated fields end with "…"):
+{ "run": { id, scenario, goal, faults, model, status, steps, tokens, cost_usd },
+  "spans": [ { seq, kind, name, status, latency_ms, prompt_tokens, completion_tokens,
+               input_excerpt (≤ 400 chars), output_excerpt (≤ 400 chars), error } ],
+  "findings": [ { detector, severity, span_seq, message } ] }
+
+HISTORY: previous chat_messages for this run (oldest first, last 10)
+USER: &lt;question from the Ask-AI panel, default "Why did this run fail?"&gt;</code></pre>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Setup 1 · Account</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>Setup 1 — Cloudflare account and Free plan</h1>
+      <p class="lead">Create the account that hosts AgentTrace. No payment method is needed.</p>
+      <dl class="meta"><div><dt>Time</dt><dd>≈ 10 min</dd></div><div><dt>Covers</dt><dd>E1, E2</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Steps</h2>
+<ol class='steps'><li>Sign up at <a href='https://dash.cloudflare.com/sign-up/workers-and-pages'>dash.cloudflare.com/sign-up/workers-and-pages</a> using <code>jatin.rathore@skydo.com</code> or a personal email. <span class="badge ok">✅ confirmed</span></li><li>Verify the email from the confirmation mail.</li><li>Stay on the <b>Workers Free</b> plan. Do not add a card. Free covers Workers, Workers AI (10,000 Neurons/day), SQLite Durable Objects and AI Gateway core. <span class="badge ok">✅ confirmed</span></li><li>Open <b>Workers &amp; Pages</b> once. Choose a <b>workers.dev subdomain</b> (for example <code>jatin-rathore</code>). This sets the final URL <code>https://agenttrace.&lt;subdomain&gt;.workers.dev</code>. <span class="badge warn">🟡 Wrangler also prompts for it on first deploy</span></li><li>Note the <b>Account ID</b> (dashboard sidebar, or <code>npx wrangler whoami</code> after Setup 2).</li></ol>
+
+<h2>Verify</h2>
+<div class="table-wrap"><table><thead><tr><th>Check</th><th>Expected</th></tr></thead><tbody>
+<tr><td>Dashboard → Workers &amp; Pages → Plans</td><td>Free</td></tr>
+<tr><td>Dashboard → AI → Workers AI</td><td>Page opens and shows a usage graph (empty)</td></tr>
+<tr><td>Subdomain</td><td>Visible under Workers &amp; Pages → Overview → Subdomain</td></tr>
+</tbody></table></div>
+<div class="callout warning"><span class="ico">⚠️</span><div><div class="title">Do not upgrade by accident</div><p>Some Workers AI models require a paid billing method (Kimi, GLM-5.x, DeepSeek v4). Llama 3.3 and Llama 3.1 8B do not. Never select those models in AgentTrace.</p></div></div>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

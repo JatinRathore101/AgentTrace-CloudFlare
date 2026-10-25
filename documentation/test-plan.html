@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test plan · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>Test plan — AgentTrace</h1>
+      <p class="lead">Test cases covering every objective, including negative and regression cases.</p>
+      <dl class="meta"><div><dt>Cases</dt><dd>24</dd></div><div><dt>Envs</dt><dd>local, prod</dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+<h2>Cases</h2>
+<div class="table-wrap"><table><thead><tr><th>#</th><th>Scenario</th><th>Preconditions / data</th><th>Steps</th><th>Expected result</th><th>Covers</th><th>Env</th></tr></thead><tbody>
+<tr><td>TC1</td><td>Happy path S1</td><td>Llama 3.1 8B, no faults</td><td>New run S1 none</td><td>status succeeded; spans ≥ 5 (llm + 4 tools); 0 crit findings; final answer mentions weather, flight and INR budget</td><td>O1, O2</td><td>local</td></tr>
+<tr><td>TC2</td><td>Happy path S2</td><td>—</td><td>New run S2 none</td><td>succeeded; exactly 1 tool span getWeather</td><td>O1</td><td>local</td></tr>
+<tr><td>TC3</td><td>Loop fault</td><td>—</td><td>S1 + loop</td><td>status max_steps; findings loop + max_steps; steps = 8</td><td>O1, O4</td><td>local</td></tr>
+<tr><td>TC4</td><td>Tool error</td><td>—</td><td>S1 or S3 + tool_error</td><td>error span on convertCurrency with message; finding tool_error</td><td>O4</td><td>local</td></tr>
+<tr><td>TC5</td><td>Stale context</td><td>—</td><td>S3 + stale_context</td><td>finding stale_context pointing at the getUserProfile span</td><td>O4</td><td>local</td></tr>
+<tr><td>TC6</td><td>Token waste</td><td>—</td><td>S2 + token_waste</td><td>finding token_waste; prompt tokens on step 2 much higher than step 1</td><td>O4</td><td>local</td></tr>
+<tr><td>TC7</td><td>Wrong tool</td><td>—</td><td>S2 + wrong_tool</td><td>finding unexpected_tool or missing_tool (model dependent, 🟡)</td><td>O4</td><td>local</td></tr>
+<tr><td>TC8</td><td>Span fields</td><td>Any finished run</td><td>Open a span</td><td>kind, name, status, latency, tokens (llm), input/output JSON, gateway_log_id (llm)</td><td>O2</td><td>local</td></tr>
+<tr><td>TC9</td><td>Timeline geometry</td><td>Run with ≥ 5 spans</td><td>Inspect the waterfall</td><td>Bars ordered by seq, no overlap within one lane, widths proportional to latency</td><td>O3</td><td>local</td></tr>
+<tr><td>TC10</td><td>Cost math</td><td>Finished run</td><td>Compare UI totals with the formula</td><td>neurons = pt×rate_in/1M + ct×rate_out/1M; usd = neurons×0.011/1000</td><td>O3</td><td>local</td></tr>
+<tr><td>TC11</td><td>Persistence</td><td>Runs exist</td><td>Restart the dev server, reload</td><td>All runs, spans, findings and chat still listed</td><td>O2</td><td>local</td></tr>
+<tr><td>TC12</td><td>Ask AI default</td><td>Failed run</td><td>Open the Ask-AI panel, send</td><td>Answer cites span numbers; stored in chat</td><td>O4</td><td>local</td></tr>
+<tr><td>TC13</td><td>Ask AI memory</td><td>TC12 done</td><td>Ask a follow-up, then reload</td><td>Follow-up uses the previous answer; history shows both turns</td><td>O4</td><td>local</td></tr>
+<tr><td>TC14</td><td>Ask AI on a running run</td><td>Run in progress</td><td>Try to send</td><td>Disabled in the UI; API returns 409</td><td>O4</td><td>local</td></tr>
+<tr><td>TC15</td><td>Compare</td><td>TC1 and TC3 runs</td><td>Compare a=TC1, b=TC3</td><td>Deltas positive for steps, tokens, cost; loop only in B; diverging steps highlighted</td><td>O5</td><td>local</td></tr>
+<tr><td>TC16</td><td>Compare invalid</td><td>—</td><td><code>/compare?a=x&amp;b=x</code></td><td>400 and a message in the UI</td><td>O5</td><td>local</td></tr>
+<tr><td>TC17</td><td>Concurrent start</td><td>A run is running</td><td>Start another</td><td>429 "run in progress" and a snackbar</td><td>O2</td><td>local</td></tr>
+<tr><td>TC18</td><td>Validation</td><td>—</td><td>POST /api/runs with an unknown scenario or fault</td><td>400 with a field-level message</td><td>O2</td><td>local</td></tr>
+<tr><td>TC19</td><td>Unknown run</td><td>—</td><td>GET /api/runs/nope</td><td>404; UI shows not-found</td><td>O2</td><td>local</td></tr>
+<tr><td>TC20</td><td>Quota exhausted</td><td>Simulate by making the mocked AI throw a quota error (unit) or wait for the real cap</td><td>Start a run</td><td>Run status failed with a clear quota message; no crash</td><td>O1</td><td>local</td></tr>
+<tr><td>TC21</td><td>Theme regression</td><td>Boilerplate theme kept</td><td>Toggle dark/light, reload</td><td>Theme persists (redux-persist localStorage)</td><td>O6</td><td>local</td></tr>
+<tr><td>TC22</td><td>Automated suite</td><td>—</td><td><code>npx vitest run</code> and <code>npm run lint</code></td><td>All pass</td><td>O1–O5</td><td>local</td></tr>
+<tr><td>TC23</td><td>Prod smoke</td><td>Deployed</td><td>Runbook verification block</td><td>scenarios = 3; a run reaches a final status; Observability shows traces</td><td>O6</td><td>prod</td></tr>
+<tr><td>TC24</td><td>Prod demo model</td><td>MODEL_DEFAULT = 3.3 70B</td><td>S1 none on prod</td><td>succeeded; model column shows llama-3.3-70b; AI Gateway log present</td><td>O1, O6</td><td>prod</td></tr>
+</tbody></table></div>
+<div class="callout note"><span class="ico">📌</span><div><div class="title">Idempotency</div><p>There is no SQL to re-run. The DO schema uses <code>IF NOT EXISTS</code>, and TC11 covers restart idempotency. Re-deploying the same version (TC23 twice) must not lose data.</p></div></div>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

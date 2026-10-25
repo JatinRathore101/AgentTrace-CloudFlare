@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI 3 · AgentTrace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/nav.js"></script>
+<script src="assets/docs.js" defer></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn icon menu-btn" id="menu-btn" title="Menu">☰</button>
+        <span class="crumbs" id="crumbs"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn icon" id="theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn icon" id="print-btn" title="Print / PDF">🖨️</button>
+      </div>
+    </div>
+    <main class="content">
+
+      <h1>UI 3 — Compare runs</h1>
+      <p class="lead">Side-by-side comparison of two runs, to show what a fault or model change did.</p>
+      <dl class="meta"><div><dt>Repo</dt><dd>ai-powered-application-Cloudflare</dd></div><div><dt>Route</dt><dd><code>/compare?a=&b=</code></dd></div><div><dt>Components touched</dt><dd><code>src/app/compare/page.tsx</code>, <code>components/CompareView.tsx</code>, <code>MetricDelta.tsx</code></dd></div><div><dt>Last updated</dt><dd>25 Oct 2026</dd></div></dl>
+
+
+
+<h2>States</h2>
+<div class="table-wrap"><table><thead><tr><th>State</th><th>Trigger</th><th>What the user sees</th></tr></thead><tbody>
+<tr><td>Loading</td><td>Page open</td><td>Two skeleton columns</td></tr>
+<tr><td>Deltas</td><td>Loaded</td><td>Metric tiles: steps, tokens, cost, duration, errors, with a ▲/▼ coloured delta (b − a)</td></tr>
+<tr><td>Findings diff</td><td>Loaded</td><td>Three groups: only in A, only in B, in both</td></tr>
+<tr><td>Aligned steps</td><td>Loaded</td><td>Two columns per loop step. Rows where the tool calls differ are highlighted.</td></tr>
+<tr><td>Invalid</td><td>Missing, equal or unknown ids</td><td>Message plus a link back to the runs list</td></tr>
+</tbody></table></div>
+<h2>APIs used</h2>
+<div class="table-wrap"><table><thead><tr><th>API</th><th>Purpose</th><th>Doc</th></tr></thead><tbody>
+<tr><td>API 6</td><td>Comparison</td><td><a href='api-6.html'>api-6</a></td></tr>
+</tbody></table></div>
+<h2>Validation / edge cases</h2>
+<ul><li>Runs with different scenarios can be compared, but a warning banner says so.</li><li>Lower cost or tokens shows green, higher shows red. Neutral when unchanged.</li></ul>
+
+      <div class="footer"><span>AgentTrace · generate-docs</span><span>Last updated 25 Oct 2026</span></div>
+    </main>
+  </div>
+</div>
+</body>
+</html>
